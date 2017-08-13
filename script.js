@@ -14,6 +14,7 @@ hoverPoint = undefined;
 // Global others
 var numSides = 5,
 delta = 5,
+numLayers = 1,
 amountToDraw = 50,
 snapDistance = 10,
 cclockwise = false;
@@ -62,18 +63,31 @@ $('#height-select').on('change', function() {
 $('#clockwise-check').click(function() {
 	cclockwise = !this.checked;
 });
+$('#layers-select').click(function() {
+	numLayers = $(this).val();
+});
 
 
 function Shape(points) {
 	this.points = points;
 	this.sides = numSides;
+	this.layers = numLayers;
 	this.calculatePoints = function() {
-		for (var i = 0; i < amountToDraw; i++) {
-			// Add point to end of array that is on line segment from beginning
-			this.points.push({
-				x: this.points[i].x + (this.points[i+1].x - this.points[i].x) / delta,
-				y: this.points[i].y + (this.points[i+1].y - this.points[i].y) / delta
-			});
+		var count = 0;
+		for (var layer = 0; layer < this.layers; layer++){
+		var startingIndex = parseFloat(amountToDraw * layer) + parseFloat(this.sides * layer);
+			for (var i = startingIndex; i < startingIndex +  + parseFloat(amountToDraw); i++) {
+				// Add point to end of array that is on line segment from beginning
+				this.points.push({
+					x: this.points[i].x + (this.points[i+1].x - this.points[i].x) / delta,
+					y: this.points[i].y + (this.points[i+1].y - this.points[i].y) / delta
+				});
+				count ++;
+			}
+			var currentLength = points.length;
+			for(var i = currentLength - 1; i >= currentLength - this.sides; i--){
+				this.points.push(this.points[i]);
+			}
 		}
 		return this;
 	}
@@ -88,19 +102,19 @@ function Shape(points) {
 		ctx.stroke();
 		ctx.closePath();
 	}
-	this.normalize = function() {
+	this.normalize = function(startIndex) {
 		// Find the center
 		var cx = 0,
 		cy = 0,
 		i,
 		j;
-		for (i = 0; i < this.sides; i++) {
+		for (i = startIndex; i < startIndex + this.sides; i++) {
 			cx += this.points[i].x / this.sides;
 			cy += this.points[i].y / this.sides;
 		}
 		// Sort points clockwisely
-		for (i = 0; i < this.sides; i++) {
-			for (j = i + 1; j < this.sides; j++) {
+		for (i = startIndex; i < startIndex + this.sides; i++) {
+			for (j = i + 1; j < startIndex + this.sides; j++) {
 				if (cclockwise ^ less(this.points[i], this.points[j], cx, cy)) {
 					var temp = this.points[i];
 					this.points[i] = this.points[j];
@@ -194,7 +208,7 @@ function clickHandler(event) {
 		}
 		shapes.push(new Shape(points));
 		points = [];
-		shapes[shapes.length - 1].normalize().calculatePoints().drawShape();
+		shapes[shapes.length - 1].normalize(0).calculatePoints().drawShape();
 	}
 }
 
