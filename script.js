@@ -73,24 +73,28 @@ function Shape(points) {
 	this.sides = numSides;
 	this.layers = numLayers;
 	this.calculatePoints = function() {
-		//loop for each layer
-		for (var layer = 0; layer < this.layers; layer++){
-			//What index the current layer starts at
-			var startingIndex = (amountToDraw + this.sides) * layer;
-			//Add all other points
-			for (var i = startingIndex; i < startingIndex + amountToDraw; i++) {
+		var layer = 0,
+		index = 0,
+		length = 0,
+		i = 0;
+
+		// Loop for each layer
+		for (layer = 0; layer < this.layers; layer++){
+			// Add all other points
+			for (length = index + amountToDraw; index < length; index++) {
 				// Add point to end of array that is on line segment from beginning
 				this.points.push({
-					x: this.points[i].x + (this.points[i+1].x - this.points[i].x) / delta,
-					y: this.points[i].y + (this.points[i+1].y - this.points[i].y) / delta
+					x: this.points[index].x + (this.points[index+1].x - this.points[index].x) / delta,
+					y: this.points[index].y + (this.points[index+1].y - this.points[index].y) / delta
 				});
 			}
-			//Add last (numSides) points to points array in reverse order 
-			//so the next layer can be generated in opposite direction
-			var currentLength = points.length;
-			for(var i = currentLength - 1; i >= currentLength - this.sides; i--){
+			// Add last (numSides) points to points array in reverse order 
+			// so the next layer can be generated in opposite direction
+			for (length = this.points.length, i = length - 1; i >= length - this.sides; i--){
 				this.points.push(this.points[i]);
 			}
+			// Account for new points in index counter
+			index += this.sides;
 		}
 		return this;
 	}
