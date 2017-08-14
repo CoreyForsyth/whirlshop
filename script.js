@@ -73,17 +73,20 @@ function Shape(points) {
 	this.sides = numSides;
 	this.layers = numLayers;
 	this.calculatePoints = function() {
-		var count = 0;
+		//loop for each layer
 		for (var layer = 0; layer < this.layers; layer++){
-		var startingIndex = parseFloat(amountToDraw * layer) + parseFloat(this.sides * layer);
-			for (var i = startingIndex; i < startingIndex +  + parseFloat(amountToDraw); i++) {
+			//What index the current layer starts at
+			var startingIndex = (amountToDraw + this.sides) * layer;
+			//Add all other points
+			for (var i = startingIndex; i < startingIndex + amountToDraw; i++) {
 				// Add point to end of array that is on line segment from beginning
 				this.points.push({
 					x: this.points[i].x + (this.points[i+1].x - this.points[i].x) / delta,
 					y: this.points[i].y + (this.points[i+1].y - this.points[i].y) / delta
 				});
-				count ++;
 			}
+			//Add last (numSides) points to points array in reverse order 
+			//so the next layer can be generated in opposite direction
 			var currentLength = points.length;
 			for(var i = currentLength - 1; i >= currentLength - this.sides; i--){
 				this.points.push(this.points[i]);
@@ -102,19 +105,19 @@ function Shape(points) {
 		ctx.stroke();
 		ctx.closePath();
 	}
-	this.normalize = function(startIndex) {
+	this.normalize = function() {
 		// Find the center
 		var cx = 0,
 		cy = 0,
 		i,
 		j;
-		for (i = startIndex; i < startIndex + this.sides; i++) {
+		for (i = 0; i < this.sides; i++) {
 			cx += this.points[i].x / this.sides;
 			cy += this.points[i].y / this.sides;
 		}
 		// Sort points clockwisely
-		for (i = startIndex; i < startIndex + this.sides; i++) {
-			for (j = i + 1; j < startIndex + this.sides; j++) {
+		for (i = 0; i < this.sides; i++) {
+			for (j = i + 1; j < this.sides; j++) {
 				if (cclockwise ^ less(this.points[i], this.points[j], cx, cy)) {
 					var temp = this.points[i];
 					this.points[i] = this.points[j];
@@ -208,7 +211,7 @@ function clickHandler(event) {
 		}
 		shapes.push(new Shape(points));
 		points = [];
-		shapes[shapes.length - 1].normalize(0).calculatePoints().drawShape();
+		shapes[shapes.length - 1].normalize().calculatePoints().drawShape();
 	}
 }
 
