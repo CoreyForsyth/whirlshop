@@ -8,7 +8,11 @@ hoverCtx = hoverCanvas.getContext("2d"),
 points = [],
 clickedPoints = [],
 shapes = [],
-hoverPoint = undefined;
+hoverPoint = undefined,
+draggingPoint = -1,
+startDraggingPoint = undefined;
+
+
 
 
 // Global settings
@@ -22,8 +26,24 @@ var settings = {
 };
 
 // Event listeners
-hoverCanvas.addEventListener('click', clickHandler);
+//hoverCanvas.addEventListener('click', clickHandler);
 hoverCanvas.addEventListener('mousemove', debounce(mouseMoveHandler, 13));
+hoverCanvas.addEventListener('mousedown', function (event) {
+	for( var i = 0; i < clickedPoints.length; i++){
+		dist = distance(clickedPoints[i], {x: event.offsetX, y: event.offsetY});
+		if (dist < settings['snapDistance']) {
+			draggingPoint = i;
+		}
+	}
+	if(draggingPoint > -1)
+		console.log("down");
+});
+hoverCanvas.addEventListener('mouseup', function (event) {
+	if( !startDraggingPoint )
+		clickHandler(event);
+	draggingPoint = -1;
+	startDraggingPoint = undefined;
+});
 
 window.addEventListener('resize', debounce(resizeCanvas, 100));
 
@@ -78,7 +98,32 @@ $('#layers-select').click(function() {
 
 
 function mouseMoveHandler(event) {
+	//if point is being dragged
+	if(draggingPoint > -1){
+		if(!startDraggingPoint)
+			startDraggingPoint = {x: event.offsetX, y: event.offsetY};
+		var nextPoint = {x: clickedPoints[draggingPoint].x + event.offsetX - startDraggingPoint.x, y: clickedPoints[draggingPoint].y + event.offsetY - startDraggingPoint.y}
+		startDraggingPoint = {x: event.offsetX, y: event.offsetY};
+		for(var i = 0; i < shapes.length; i++){
+			for(var j = 0; j < shapes[i].points.length; j++){
+				if(shapes[i].points[j].x == clickedPoints[draggingPoint].x && shapes[i].points[j].y == clickedPoints[draggingPoint].y)
+					shapes[i].points[j] = nextPoint;
+			}
+			shapes[i].points.splice(shapes[i].sides);
+			shapes[i].calculatePoints();
+		}
+		startDraggingPoint = {x: event.offsetX, y: event.offsetY}
+		clickedPoints[draggingPoint] = nextPoint;
+		redrawShapes();
 
+
+
+		return;
+	}
+	startDraggingPoint = undefined;
+
+
+	//point is not being dragged
 	hoverPoint = undefined;
 
 	hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
