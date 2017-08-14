@@ -53,20 +53,27 @@ function debounce(func, wait, immediate) {
 	};
 };
 
+// Plus sign in front of $(this).val() returns numerical value instead of string
 $('#sides-select').on('change', function() {
-	settings['numSides'] = $(this).val();
+	settings['numSides'] = +$(this).val();
 });
 $('#slope-select').on('change', function() {
-	settings['delta'] = $(this).val();
+	settings['delta'] = +$(this).val();
 });
 $('#height-select').on('change', function() {
-	settings['amountToDraw'] = $(this).val();
+	settings['amountToDraw'] = +$(this).val();
+});
+$('#slope-select').on('change', function() {
+	settings['delta'] = +$(this).val();
+});
+$('#height-select').on('change', function() {
+	settings['amountToDraw'] = +$(this).val();
 });
 $('#clockwise-check').click(function() {
 	settings['cclockwise'] = !this.checked;
 });
 $('#layers-select').click(function() {
-	settings['numLayers'] = $(this).val();
+	settings['numLayers'] = +$(this).val();
 });
 
 
@@ -91,7 +98,7 @@ function Shape(points) {
 				});
 			}
 			// Add last (numSides) points to points array in reverse order 
-			// so the next layer can be generated in opposite direction
+			// so the next layer can be generated in opposite direction			
 			for (length = this.points.length, i = length - 1; i >= length - this.sides; i--){
 				this.points.push(this.points[i]);
 			}
