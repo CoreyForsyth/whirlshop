@@ -11,13 +11,15 @@ shapes = [],
 hoverPoint = undefined;
 
 
-// Global others
-var numSides = 5,
-delta = 5,
-numLayers = 1,
-amountToDraw = 50,
-snapDistance = 10,
-cclockwise = false;
+// Global settings
+var settings = {
+	numSides: 5,
+	delta: 5,
+	numLayers: 1,
+	amountToDraw: 50,
+	snapDistance: 10,
+	cclockwise: false
+};
 
 // Event listeners
 hoverCanvas.addEventListener('click', clickHandler);
@@ -53,26 +55,32 @@ function debounce(func, wait, immediate) {
 
 // Plus sign in front of $(this).val() returns numerical value instead of string
 $('#sides-select').on('change', function() {
-	numSides = +$(this).val();
+	settings['numSides'] = +$(this).val();
 });
 $('#slope-select').on('change', function() {
-	delta = +$(this).val();
+	settings['delta'] = +$(this).val();
 });
 $('#height-select').on('change', function() {
-	amountToDraw = +$(this).val();
+	settings['amountToDraw'] = +$(this).val();
+});
+$('#slope-select').on('change', function() {
+	settings['delta'] = +$(this).val();
+});
+$('#height-select').on('change', function() {
+	settings['amountToDraw'] = +$(this).val();
 });
 $('#clockwise-check').click(function() {
-	cclockwise = !this.checked;
+	settings['cclockwise'] = !this.checked;
 });
 $('#layers-select').click(function() {
-	numLayers = +$(this).val();
+	settings['numLayers'] = +$(this).val();
 });
 
 
 function Shape(points) {
 	this.points = points;
-	this.sides = numSides;
-	this.layers = numLayers;
+	this.sides = settings['numSides'];
+	this.layers = settings['numLayers'];
 	this.calculatePoints = function() {
 		var layer = 0,
 		index = 0,
@@ -82,11 +90,11 @@ function Shape(points) {
 		// Loop for each layer
 		for (layer = 0; layer < this.layers; layer++){
 			// Add all other points
-			for (length = index + amountToDraw; index < length; index++) {
-				// Add point to end of array that is on line segment from beginning				
+			for (length = index + settings['amountToDraw']; index < length; index++) {
+				// Add point to end of array that is on line segment from beginning
 				this.points.push({
-					x: this.points[index].x + (this.points[index+1].x - this.points[index].x) / delta,
-					y: this.points[index].y + (this.points[index+1].y - this.points[index].y) / delta
+					x: this.points[index].x + (this.points[index+1].x - this.points[index].x) / settings['delta'],
+					y: this.points[index].y + (this.points[index+1].y - this.points[index].y) / settings['delta']
 				});
 			}
 			// Add last (numSides) points to points array in reverse order 
@@ -123,7 +131,7 @@ function Shape(points) {
 		// Sort points clockwisely
 		for (i = 0; i < this.sides; i++) {
 			for (j = i + 1; j < this.sides; j++) {
-				if (cclockwise ^ less(this.points[i], this.points[j], cx, cy)) {
+				if (settings['cclockwise'] ^ less(this.points[i], this.points[j], cx, cy)) {
 					var temp = this.points[i];
 					this.points[i] = this.points[j];
 					this.points[j] = temp;
@@ -145,7 +153,7 @@ function mouseMoveHandler(event) {
 	dist;
 	clickedPoints.forEach(function(p){
 		dist = distance(p, {x: event.offsetX, y: event.offsetY});
-		if (dist < snapDistance && dist < minDistance) {
+		if (dist < settings['snapDistance'] && dist < minDistance) {
 			minDistance = dist;
 			closestPoint = p;
 		}
@@ -155,14 +163,14 @@ function mouseMoveHandler(event) {
 		hoverPoint = closestPoint;
 	} 
 	else {
-		if (event.offsetY < snapDistance)
+		if (event.offsetY < settings['snapDistance'])
 			closestPoint.y = 0;
-		else if (event.offsetY > hoverCanvas.height - snapDistance)
+		else if (event.offsetY > hoverCanvas.height - settings['snapDistance'])
 			closestPoint.y = hoverCanvas.height;
 
-		if (event.offsetX < snapDistance)
+		if (event.offsetX < settings['snapDistance'])
 			closestPoint.x = 0;
-		else if (event.offsetX > hoverCanvas.width - snapDistance)
+		else if (event.offsetX > hoverCanvas.width - settings['snapDistance'])
 			closestPoint.x = hoverCanvas.width;
 		
 		if (typeof closestPoint.x !== 'undefined' 
@@ -178,7 +186,7 @@ function mouseMoveHandler(event) {
 	if (typeof hoverPoint !== 'undefined') {
 		hoverCtx.beginPath();
 		hoverCtx.fillStyle = "rgba(200,200,200,.5)";
-		hoverCtx.arc(hoverPoint.x, hoverPoint.y, snapDistance, 0, 2 * Math.PI);
+		hoverCtx.arc(hoverPoint.x, hoverPoint.y, settings['snapDistance'], 0, 2 * Math.PI);
 		hoverCtx.fill();
 		hoverCtx.closePath();
 	}
@@ -206,7 +214,7 @@ function clickHandler(event) {
 	ctx.fill();
 	ctx.closePath();
 
-	if (points.length % numSides == 0) {
+	if (points.length % settings['numSides'] == 0) {
 		for (var i = 0; i < points.length; i++) {
 			ctx.beginPath();
 			ctx.fillStyle = "rgb(10,0,255)";
