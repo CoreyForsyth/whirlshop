@@ -51,20 +51,21 @@ function debounce(func, wait, immediate) {
 	};
 };
 
+// Plus sign in front of $(this).val() returns numerical value instead of string
 $('#sides-select').on('change', function() {
-	numSides = $(this).val();
+	numSides = +$(this).val();
 });
 $('#slope-select').on('change', function() {
-	delta = $(this).val();
+	delta = +$(this).val();
 });
 $('#height-select').on('change', function() {
-	amountToDraw = $(this).val();
+	amountToDraw = +$(this).val();
 });
 $('#clockwise-check').click(function() {
 	cclockwise = !this.checked;
 });
 $('#layers-select').click(function() {
-	numLayers = $(this).val();
+	numLayers = +$(this).val();
 });
 
 
@@ -82,14 +83,14 @@ function Shape(points) {
 		for (layer = 0; layer < this.layers; layer++){
 			// Add all other points
 			for (length = index + amountToDraw; index < length; index++) {
-				// Add point to end of array that is on line segment from beginning
+				// Add point to end of array that is on line segment from beginning				
 				this.points.push({
 					x: this.points[index].x + (this.points[index+1].x - this.points[index].x) / delta,
 					y: this.points[index].y + (this.points[index+1].y - this.points[index].y) / delta
 				});
 			}
 			// Add last (numSides) points to points array in reverse order 
-			// so the next layer can be generated in opposite direction
+			// so the next layer can be generated in opposite direction			
 			for (length = this.points.length, i = length - 1; i >= length - this.sides; i--){
 				this.points.push(this.points[i]);
 			}
