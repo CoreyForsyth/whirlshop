@@ -77,71 +77,6 @@ $('#layers-select').click(function() {
 });
 
 
-function Shape(points) {
-	this.points = points;
-	this.sides = settings['numSides'];
-	this.layers = settings['numLayers'];
-	this.calculatePoints = function() {
-		var layer = 0,
-		index = 0,
-		length = 0,
-		i = 0;
-
-		// Loop for each layer
-		for (layer = 0; layer < this.layers; layer++){
-			// Add all other points
-			for (length = index + settings['amountToDraw']; index < length; index++) {
-				// Add point to end of array that is on line segment from beginning
-				this.points.push({
-					x: this.points[index].x + (this.points[index+1].x - this.points[index].x) / settings['delta'],
-					y: this.points[index].y + (this.points[index+1].y - this.points[index].y) / settings['delta']
-				});
-			}
-			// Add last (numSides) points to points array in reverse order 
-			// so the next layer can be generated in opposite direction			
-			for (length = this.points.length, i = length - 1; i >= length - this.sides; i--){
-				this.points.push(this.points[i]);
-			}
-			// Account for new points in index counter
-			index += this.sides;
-		}
-		return this;
-	}
-	this.drawShape = function() {
-		ctx.beginPath();
-		ctx.fillStyle = "rgb(0,0,0)";
-		ctx.moveTo(this.points[this.sides - 1].x, this.points[this.sides - 1].y);
-		ctx.lineTo(this.points[0].x, this.points[0].y);
-		for (var i = 1, l = this.points.length; i < l; i++) 
-			ctx.lineTo(this.points[i].x, this.points[i].y);
-		
-		ctx.stroke();
-		ctx.closePath();
-	}
-	this.normalize = function() {
-		// Find the center
-		var cx = 0,
-		cy = 0,
-		i,
-		j;
-		for (i = 0; i < this.sides; i++) {
-			cx += this.points[i].x / this.sides;
-			cy += this.points[i].y / this.sides;
-		}
-		// Sort points clockwisely
-		for (i = 0; i < this.sides; i++) {
-			for (j = i + 1; j < this.sides; j++) {
-				if (settings['cclockwise'] ^ less(this.points[i], this.points[j], cx, cy)) {
-					var temp = this.points[i];
-					this.points[i] = this.points[j];
-					this.points[j] = temp;
-				}
-			}
-		}
-		return this;
-	}
-}
-
 function mouseMoveHandler(event) {
 
 	hoverPoint = undefined;
@@ -197,7 +132,7 @@ function distance(p1, p2) {
 }
 
 function clickHandler(event) {
-	if (points.length > 2 && checkIfInsideShape(event.offsetX, event.offsetY, points))
+	if (points.length > 2 && checkIfInsidePoints(event.offsetX, event.offsetY, points))
 		return;
 	var clickedPoint = hoverPoint || {x: event.offsetX, y: event.offsetY};
 
@@ -222,9 +157,9 @@ function clickHandler(event) {
 			ctx.fill();
 			ctx.closePath();
 		}
-		shapes.push(new Shape(points));
+		shapes.push(new Shape(points, settings));
 		points = [];
-		shapes[shapes.length - 1].normalize().calculatePoints().drawShape();
+		shapes[shapes.length - 1].normalize().calculatePoints().drawShape(ctx);
 	}
 }
 
@@ -255,7 +190,7 @@ function less(a, b, cx, cy)
     return d1 > d2;
 }
 
-function checkIfInsideShape(testx, testy, points) {
+function checkIfInsidePoints(testx, testy, points) {
 	var c = false,
 	i,
 	j;
@@ -270,6 +205,6 @@ function checkIfInsideShape(testx, testy, points) {
 function redrawShapes() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	shapes.forEach(function(s) {
-		s.drawShape();
+		s.drawShape(ctx);
 	});
 }
