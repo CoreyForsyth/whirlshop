@@ -172,13 +172,17 @@ function distance(p1, p2) {
 }
 
 function addPointHandler(event) {
-	if (points.length > 2 && checkIfInsidePoints(event.offsetX, event.offsetY, points))
-		return;
 	var clickedPoint = hoverPoint || {x: event.offsetX, y: event.offsetY};
 
 	if (~points.indexOf(clickedPoint))
 		return;
 	points.push(clickedPoint);
+	normalize(points, points.length, settings['cclockwise']);
+	if (points.length > 3 && !shapeIsConvex(points)){
+		points.splice(points.indexOf(clickedPoint), 1);
+		return;
+	}
+
 	if (!~clickedPoints.indexOf(clickedPoint))
 		clickedPoints.push(clickedPoint);
 
