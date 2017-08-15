@@ -24,7 +24,9 @@ hoverCanvas.addEventListener('mouseup', function (event) {
 	mouseDraggingPoint = false;
 });
 
-window.addEventListener('resize', ws.resizeCanvas(), 100);
+window.addEventListener('resize', function(){
+	ws.resizeCanvas();
+});
 
 ws.resizeCanvas();
 

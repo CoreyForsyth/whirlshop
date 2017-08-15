@@ -61,6 +61,7 @@ whirlshop.prototype.redrawShapes = function() {
 
 // Not working rn
 whirlshop.prototype.resizeCanvas = function() {
+	console.log("asdfasdf");
     this.canvas.width = window.innerWidth - 250;
     this.canvas.height = window.innerHeight;
     this.hoverCanvas.width = window.innerWidth - 250;
