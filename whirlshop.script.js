@@ -68,6 +68,10 @@ function mouseMoveHandler(event) {
 	else { // Point is not being dragged
 		ws.setHoverPoint(mousePoint);
 	}
-
 	ws.drawHoverPoint();
+	if(ws.hoverPoint === undefined){
+		ws.setHoverShape(mousePoint);
+		if(ws.hoverShape > -1)
+			ws.drawHoverShape();
+	}
 }

@@ -22,6 +22,7 @@ var whirlshop = function(object) {
 	this.allPoints = [];
 	this.shapes = [];
 	this.hoverPoint = undefined;
+	this.hoverShape = -1;
 	this.mouseDown = false;
 	this.mouseDraggingPoint = false;
 
@@ -174,3 +175,17 @@ whirlshop.prototype.movePoints = function(newPoint){
 		this.redrawShapes();
 }
 
+whirlshop.prototype.setHoverShape = function (point) {
+	for( var i = 0, l = this.shapes.length; i < l; i++){
+		if( pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
+			this.hoverShape = i;
+			console.log(this.hoverShape);
+			return;
+		}
+		this.hoverShape = -1;
+	}
+}
+
+whirlshop.prototype.drawHoverShape = function (point) {
+	
+}

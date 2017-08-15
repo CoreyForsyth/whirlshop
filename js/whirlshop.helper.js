@@ -116,3 +116,15 @@ function debounce(func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 };
+
+function pointInShape(points, sides, point){
+    var c = false,
+    i,
+    j;
+    for (i = 0, j = sides - 1; i < sides; j = i++) {
+        if (((points[i].y > point.y) != (points[j].y > point.y))
+                && (point.x < (points[j].x - points[i].x) * (point.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+            c = !c;
+    }
+    return c;
+}
