@@ -1,6 +1,7 @@
 "use strict;"
 
 /**
+*
 * Shape constructor
 *
 * @param {array} point_array 	An array of border points
@@ -16,6 +17,7 @@ var Shape = function(point_array, settings) {
 }
 
 /**
+*
 * Calcuates the points in the interior of the shape
 *
 * @returns 	The Shape instance
@@ -48,6 +50,7 @@ Shape.prototype.calculatePoints = function() {
 }
 
 /**
+*
 * Draws the Shape on the provided context
 *
 * @param {2d context} ctx 		The context on which to draw the shape
@@ -69,6 +72,7 @@ Shape.prototype.drawShape = function(ctx) {
 }
 
 /**
+*
 * Sorts the points in clockwise or counter-clockwise order around the center
 *
 * @returns  The Shape instance
