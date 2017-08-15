@@ -13,7 +13,7 @@ mouseDraggingPoint = false;
 
 
 //hoverCanvas.addEventListener('click', clickHandler);
-hoverCanvas.addEventListener('mousemove', debounce(mouseMoveHandler, 13));
+hoverCanvas.addEventListener('mousemove', mouseMoveHandler);
 hoverCanvas.addEventListener('mousedown', function (event) {
 	mouseDown = true;
 });
@@ -24,7 +24,7 @@ hoverCanvas.addEventListener('mouseup', function (event) {
 	mouseDraggingPoint = false;
 });
 
-window.addEventListener('resize', debounce(ws.resizeCanvas, 100));
+window.addEventListener('resize', ws.resizeCanvas(), 100);
 
 ws.resizeCanvas();
 
