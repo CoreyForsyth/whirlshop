@@ -37,25 +37,29 @@ var whirlshop = function(object) {
 
 whirlshop.prototype.redrawShapes = function() {
 	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	
 	this.shapes.forEach(function(s) {
 		s.drawShape(this.ctx);
-	});
+	}, this);
 	this.allPoints.forEach(function(p) {
 		this.ctx.beginPath();
 		this.ctx.fillStyle = "rgb(10,0,255)";
 		this.ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
 		this.ctx.fill();
 		this.ctx.closePath();
-	});
+	}, this);
 	this.activePoints.forEach(function(p) {
 		this.ctx.beginPath();
 		this.ctx.fillStyle = "rgb(255,0,10)";
 		this.ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
 		this.ctx.fill();
 		this.ctx.closePath();
-	});
+	}, this);
+
+	return this;
 }
 
+// Not working rn
 whirlshop.prototype.resizeCanvas = function() {
     this.canvas.width = window.innerWidth - 250;
     this.canvas.height = window.innerHeight;
@@ -63,9 +67,16 @@ whirlshop.prototype.resizeCanvas = function() {
     this.hoverCanvas.height = window.innerHeight;
 
 	this.redrawShapes(); 
+
+	return this;
 }
 
-whirlshop.prototype.addPoint = function(point) { // ws.addPoint(hoverPoint || {x: event.offsetX, y: event.offsetY});
+whirlshop.prototype.addPoint = function(point) {
+
+	if (!point.x || !typeof point.x === Number)
+		throw "x is not properly defined";
+	if (!point.y || !typeof point.y === Number)
+		throw "y is not properly defined";
 
 	if (~this.activePoints.indexOf(point))
 		return;
@@ -92,4 +103,6 @@ whirlshop.prototype.addPoint = function(point) { // ws.addPoint(hoverPoint || {x
 		this.activePoints = [];
 		this.shapes[this.shapes.length - 1].calculatePoints().drawShape(this.ctx);
 	}
+
+	return this;
 }
