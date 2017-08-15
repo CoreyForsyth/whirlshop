@@ -29,7 +29,7 @@ var settings = {
 //hoverCanvas.addEventListener('click', clickHandler);
 hoverCanvas.addEventListener('mousemove', debounce(mouseMoveHandler, 13));
 hoverCanvas.addEventListener('mousedown', function (event) {
-	for( var i = 0; i < clickedPoints.length; i++){
+	for (var i = 0; i < clickedPoints.length; i++) {
 		dist = distance(clickedPoints[i], {x: event.offsetX, y: event.offsetY});
 		if (dist < settings['snapDistance']) {
 			draggingPoint = i;
@@ -102,11 +102,12 @@ function mouseMoveHandler(event) {
 	if(draggingPoint > -1){
 		if(!startDraggingPoint)
 			startDraggingPoint = {x: event.offsetX, y: event.offsetY};
-		var nextPoint = {x: clickedPoints[draggingPoint].x + event.offsetX - startDraggingPoint.x, y: clickedPoints[draggingPoint].y + event.offsetY - startDraggingPoint.y}
+		var nextPoint = {x: clickedPoints[draggingPoint].x + event.offsetX - startDraggingPoint.x, 
+			y: clickedPoints[draggingPoint].y + event.offsetY - startDraggingPoint.y}
 		startDraggingPoint = {x: event.offsetX, y: event.offsetY};
 		for(var i = 0; i < shapes.length; i++){
 			for(var j = 0; j < shapes[i].points.length; j++){
-				if(shapes[i].points[j].x == clickedPoints[draggingPoint].x && shapes[i].points[j].y == clickedPoints[draggingPoint].y)
+				if (shapes[i].points[j].x == clickedPoints[draggingPoint].x && shapes[i].points[j].y == clickedPoints[draggingPoint].y)
 					shapes[i].points[j] = nextPoint;
 			}
 			shapes[i].points.splice(shapes[i].sides);
@@ -131,6 +132,8 @@ function mouseMoveHandler(event) {
 	var minDistance = Infinity,
 	closestPoint = {},
 	dist;
+
+	// Find the closest point within the 'snapDistance' radius
 	clickedPoints.forEach(function(p){
 		dist = distance(p, {x: event.offsetX, y: event.offsetY});
 		if (dist < settings['snapDistance'] && dist < minDistance) {
@@ -139,10 +142,10 @@ function mouseMoveHandler(event) {
 		}
 	});
 
-	if (minDistance != Infinity) {
+	if (minDistance != Infinity) { // If point is found, set hoverPoint to reference it
 		hoverPoint = closestPoint;
 	} 
-	else {
+	else { // Otherwise, check if mouse is within 'snapDistance' of the edge of the screen
 		if (event.offsetY < settings['snapDistance'])
 			closestPoint.y = 0;
 		else if (event.offsetY > hoverCanvas.height - settings['snapDistance'])

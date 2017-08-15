@@ -1,2 +1,2 @@
 # whirlshop
-A simple patter generator
+A simple pattern generator
