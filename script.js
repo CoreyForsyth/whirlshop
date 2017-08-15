@@ -9,10 +9,8 @@ points = [],
 clickedPoints = [],
 shapes = [],
 hoverPoint = undefined,
-draggingPoint = -1,
-startDraggingPoint = undefined;
-
-
+mouseDown = false,
+mouseDraggingPoint = false;
 
 
 // Global settings
@@ -29,20 +27,13 @@ var settings = {
 //hoverCanvas.addEventListener('click', clickHandler);
 hoverCanvas.addEventListener('mousemove', debounce(mouseMoveHandler, 13));
 hoverCanvas.addEventListener('mousedown', function (event) {
-	for (var i = 0; i < clickedPoints.length; i++) {
-		dist = distance(clickedPoints[i], {x: event.offsetX, y: event.offsetY});
-		if (dist < settings['snapDistance']) {
-			draggingPoint = i;
-		}
-	}
-	if(draggingPoint > -1)
-		console.log("down");
+	mouseDown = true;
 });
 hoverCanvas.addEventListener('mouseup', function (event) {
-	if( !startDraggingPoint )
-		clickHandler(event);
-	draggingPoint = -1;
-	startDraggingPoint = undefined;
+	if (!mouseDraggingPoint)
+		addPointHandler(event);
+	mouseDown = false;
+	mouseDraggingPoint = false;
 });
 
 window.addEventListener('resize', debounce(resizeCanvas, 100));
@@ -98,75 +89,76 @@ $('#layers-select').click(function() {
 
 
 function mouseMoveHandler(event) {
-	//if point is being dragged
-	if(draggingPoint > -1){
-		if(!startDraggingPoint)
-			startDraggingPoint = {x: event.offsetX, y: event.offsetY};
-		var nextPoint = {x: clickedPoints[draggingPoint].x + event.offsetX - startDraggingPoint.x, 
-			y: clickedPoints[draggingPoint].y + event.offsetY - startDraggingPoint.y}
-		startDraggingPoint = {x: event.offsetX, y: event.offsetY};
-		for(var i = 0; i < shapes.length; i++){
-			for(var j = 0; j < shapes[i].points.length; j++){
-				if (shapes[i].points[j].x == clickedPoints[draggingPoint].x && shapes[i].points[j].y == clickedPoints[draggingPoint].y)
-					shapes[i].points[j] = nextPoint;
+	var i,
+	sl,
+	j,
+	spl,
+	mousePoint = {x: event.offsetX, 
+		y: event.offsetY};
+
+	if (mouseDown && hoverPoint)
+		mouseDraggingPoint = true;
+
+	if (mouseDraggingPoint) { // If point is being dragged
+		for (i = 0, sl = shapes.length; i < sl; i++){
+			for (j = 0, spl = shapes[i].points.length; j < spl; j++){
+				if (shapes[i].points[j] == hoverPoint) {
+					shapes[i].points[j] = mousePoint;
+					shapes[i].points.splice(shapes[i].sides);
+					shapes[i].calculatePoints();
+					break;
+				}
 			}
-			shapes[i].points.splice(shapes[i].sides);
-			shapes[i].calculatePoints();
 		}
-		startDraggingPoint = {x: event.offsetX, y: event.offsetY}
-		clickedPoints[draggingPoint] = nextPoint;
+		points[points.indexOf(hoverPoint)] = mousePoint;
+		clickedPoints[clickedPoints.indexOf(hoverPoint)] = mousePoint;
+		hoverPoint = mousePoint;
 		redrawShapes();
-
-
-
-		return;
 	}
-	startDraggingPoint = undefined;
+	else { // Point is not being dragged
+		hoverPoint = undefined;
 
+		var minDistance = Infinity,
+		closestPoint = {},
+		dist;
 
-	//point is not being dragged
-	hoverPoint = undefined;
+		// Find the closest point within the 'snapDistance' radius
+		clickedPoints.forEach(function(p){
+			dist = distance(p, {x: event.offsetX, y: event.offsetY});
+			if (dist < settings['snapDistance'] && dist < minDistance) {
+				minDistance = dist;
+				closestPoint = p;
+			}
+		});
+
+		if (minDistance != Infinity) { // If point is found, set hoverPoint to reference it
+			hoverPoint = closestPoint;
+		} 
+		else { // Otherwise, check if mouse is within 'snapDistance' of the edge of the screen
+			if (event.offsetY < settings['snapDistance'])
+				closestPoint.y = 0;
+			else if (event.offsetY > hoverCanvas.height - settings['snapDistance'])
+				closestPoint.y = hoverCanvas.height;
+
+			if (event.offsetX < settings['snapDistance'])
+				closestPoint.x = 0;
+			else if (event.offsetX > hoverCanvas.width - settings['snapDistance'])
+				closestPoint.x = hoverCanvas.width;
+			
+			if (typeof closestPoint.x !== 'undefined' 
+				|| typeof closestPoint.y !== 'undefined') { // If within bounds of a border
+
+				hoverPoint = closestPoint;
+				if (typeof hoverPoint.x === 'undefined')
+					hoverPoint.x = event.offsetX;
+				if (typeof hoverPoint.y === 'undefined')
+					hoverPoint.y = event.offsetY;
+			}
+		}
+	}
 
 	hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
-
-	var minDistance = Infinity,
-	closestPoint = {},
-	dist;
-
-	// Find the closest point within the 'snapDistance' radius
-	clickedPoints.forEach(function(p){
-		dist = distance(p, {x: event.offsetX, y: event.offsetY});
-		if (dist < settings['snapDistance'] && dist < minDistance) {
-			minDistance = dist;
-			closestPoint = p;
-		}
-	});
-
-	if (minDistance != Infinity) { // If point is found, set hoverPoint to reference it
-		hoverPoint = closestPoint;
-	} 
-	else { // Otherwise, check if mouse is within 'snapDistance' of the edge of the screen
-		if (event.offsetY < settings['snapDistance'])
-			closestPoint.y = 0;
-		else if (event.offsetY > hoverCanvas.height - settings['snapDistance'])
-			closestPoint.y = hoverCanvas.height;
-
-		if (event.offsetX < settings['snapDistance'])
-			closestPoint.x = 0;
-		else if (event.offsetX > hoverCanvas.width - settings['snapDistance'])
-			closestPoint.x = hoverCanvas.width;
-		
-		if (typeof closestPoint.x !== 'undefined' 
-			|| typeof closestPoint.y !== 'undefined') { // If within bounds of a border
-
-			hoverPoint = closestPoint;
-			if (typeof hoverPoint.x === 'undefined')
-				hoverPoint.x = event.offsetX;
-			if (typeof hoverPoint.y === 'undefined')
-				hoverPoint.y = event.offsetY;
-		}
-	}
-	if (typeof hoverPoint !== 'undefined') {
+	if (typeof hoverPoint !== 'undefined') {		
 		hoverCtx.beginPath();
 		hoverCtx.fillStyle = "rgba(200,200,200,.5)";
 		hoverCtx.arc(hoverPoint.x, hoverPoint.y, settings['snapDistance'], 0, 2 * Math.PI);
@@ -179,15 +171,15 @@ function distance(p1, p2) {
 	return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
 }
 
-function clickHandler(event) {
+function addPointHandler(event) {
 	if (points.length > 2 && checkIfInsidePoints(event.offsetX, event.offsetY, points))
 		return;
 	var clickedPoint = hoverPoint || {x: event.offsetX, y: event.offsetY};
 
-	if (points.includes(clickedPoint))
+	if (~points.indexOf(clickedPoint))
 		return;
 	points.push(clickedPoint);
-	if (!clickedPoints.includes(clickedPoint))
+	if (!~clickedPoints.indexOf(clickedPoint))
 		clickedPoints.push(clickedPoint);
 
 	// Draw point on shape canvas
@@ -212,8 +204,7 @@ function clickHandler(event) {
 }
 
 // From stackoverflow
-function less(a, b, cx, cy)
-{
+function less(a, b, cx, cy) {
     if (a.x - cx >= 0 && b.x - cx < 0)
         return true;
     if (a.x - cx < 0 && b.x - cx >= 0)
@@ -224,15 +215,15 @@ function less(a, b, cx, cy)
         return b.y > a.y;
     }
 
-    // compute the cross product of vectors (center -> a) x (center -> b)
+    // Compute the cross product of vectors (center -> a) x (center -> b)
     var det = (a.x - cx) * (b.y - cy) - (b.x - cx) * (a.y - cy);
     if (det < 0)
         return true;
     if (det > 0)
         return false;
 
-    // points a and b are on the same line from the center
-    // check which point is closer to the center
+    // Points a and b are on the same line from the center
+    // Check which point is closer to the center
     var d1 = (a.x - cx) * (a.x - cx) + (a.y - cy) * (a.y - cy);
     var d2 = (b.x - cx) * (b.x - cx) + (b.y - cy) * (b.y - cy);
     return d1 > d2;
@@ -254,5 +245,19 @@ function redrawShapes() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	shapes.forEach(function(s) {
 		s.drawShape(ctx);
+	});
+	clickedPoints.forEach(function(p) {
+		ctx.beginPath();
+		ctx.fillStyle = "rgb(10,0,255)";
+		ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+		ctx.fill();
+		ctx.closePath();
+	});
+	points.forEach(function(p) {
+		ctx.beginPath();
+		ctx.fillStyle = "rgb(255,0,10)";
+		ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+		ctx.fill();
+		ctx.closePath();
 	});
 }
