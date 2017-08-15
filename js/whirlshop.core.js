@@ -61,7 +61,6 @@ whirlshop.prototype.redrawShapes = function() {
 
 // Not working rn
 whirlshop.prototype.resizeCanvas = function() {
-	console.log("asdfasdf");
     this.canvas.width = window.innerWidth - 250;
     this.canvas.height = window.innerHeight;
     this.hoverCanvas.width = window.innerWidth - 250;
@@ -107,3 +106,71 @@ whirlshop.prototype.addPoint = function(point) {
 
 	return this;
 }
+
+whirlshop.prototype.drawHoverPoint = function(){
+	this.hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
+	if (typeof this.hoverPoint !== 'undefined') {		
+		ws.hoverCtx.fillStyle = "rgba(150,150,150,.5)";
+		drawCircle(this.hoverCtx, this.hoverPoint, this.settings['snapDistance']);
+	}
+}
+
+whirlshop.prototype.setHoverPoint = function(mousePoint){
+	this.hoverPoint = undefined;
+
+	var minDistance = Infinity,
+	closestPoint = {},
+	dist;
+
+	// Find the closest point within the 'snapDistance' radius
+	for(var i = 0, l = this.allPoints.length; i < l; i++){
+		dist = distance(this.allPoints[i], mousePoint);
+		if (dist < this.settings['snapDistance'] && dist < minDistance) {
+			minDistance = dist;
+			closestPoint = this.allPoints[i];
+		}
+	}
+
+	if (minDistance != Infinity) { // If point is found, set this.hoverPoint to reference it
+		this.hoverPoint = closestPoint;
+	} 
+	else { // Otherwise, check if mouse is within 'snapDistance' of the edge of the screen
+		if (event.offsetY < this.settings['snapDistance'])
+			closestPoint.y = 0;
+		else if (event.offsetY > this.hoverCanvas.height - this.settings['snapDistance'])
+			closestPoint.y = this.hoverCanvas.height;
+
+		if (event.offsetX < this.settings['snapDistance'])
+			closestPoint.x = 0;
+		else if (event.offsetX > this.hoverCanvas.width - this.settings['snapDistance'])
+			closestPoint.x = this.hoverCanvas.width;
+		
+		if (typeof closestPoint.x !== 'undefined' 
+			|| typeof closestPoint.y !== 'undefined') { // If within bounds of a border
+
+			this.hoverPoint = closestPoint;
+			if (typeof this.hoverPoint.x === 'undefined')
+				this.hoverPoint.x = event.offsetX;
+			if (typeof this.hoverPoint.y === 'undefined')
+				this.hoverPoint.y = event.offsetY;
+		}
+	}
+}
+
+whirlshop.prototype.movePoints = function(newPoint){
+	for (i = 0, sl = this.shapes.length; i < sl; i++){
+			for (j = 0, spl = this.shapes[i].sides; j < spl; j++){
+				if (this.shapes[i].points[j] == this.hoverPoint) {
+					this.shapes[i].points[j] = newPoint;
+					this.shapes[i].points.splice(this.shapes[i].sides);
+					this.shapes[i].calculatePoints();
+					break;
+				}
+			}
+		}
+		this.activePoints[this.activePoints.indexOf(this.hoverPoint)] = newPoint;
+		this.allPoints[this.allPoints.indexOf(this.hoverPoint)] = newPoint;
+		this.hoverPoint = newPoint;
+		this.redrawShapes();
+}
+
