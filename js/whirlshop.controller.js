@@ -62,13 +62,12 @@ function mouseMoveHandler(event) {
 	if (mouseDown && ws.hoverPoint)
 		mouseDraggingPoint = true;
 
-	if (mouseDraggingPoint) { // If point is being dragged		
+
+	if (mouseDraggingPoint) { // If point is being dragged	
 		ws.movePoints(mousePoint);
 	}
 	else { // Point is not being dragged
 		ws.setHoverPoint(mousePoint);
-	}
-	if(ws.hoverPoint === undefined){
 		ws.setHoverShape(mousePoint);
 	}
 	ws.drawHoverCanvas();
