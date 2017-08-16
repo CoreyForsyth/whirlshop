@@ -108,11 +108,30 @@ whirlshop.prototype.addPoint = function(point) {
 	return this;
 }
 
-whirlshop.prototype.drawHoverPoint = function(){
+whirlshop.prototype.drawHoverCanvas = function(){
 	this.hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
+	this.drawHoverPoint();
+	this.drawHoverShape();
+}
+
+whirlshop.prototype.drawHoverPoint = function(){
 	if (typeof this.hoverPoint !== 'undefined') {		
 		ws.hoverCtx.fillStyle = "rgba(150,150,150,.5)";
 		drawCircle(this.hoverCtx, this.hoverPoint, this.settings['snapDistance']);
+	}
+}
+
+whirlshop.prototype.drawHoverShape = function () {
+	if( this.hoverShape > -1 ){
+		this.hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
+		this.hoverCtx.fillStyle = "rgba(98, 81, 255, 0.3)";
+		this.hoverCtx.beginPath();
+		this.hoverCtx.moveTo(this.shapes[this.hoverShape].points[0].x, this.shapes[this.hoverShape].points[0].y);
+		for( var i = 1, l = this.shapes[this.hoverShape].sides; i < l; i++){
+			this.hoverCtx.lineTo(this.shapes[this.hoverShape].points[i].x, this.shapes[this.hoverShape].points[i].y)
+		}
+		this.hoverCtx.closePath();
+		this.hoverCtx.fill();
 	}
 }
 
@@ -179,13 +198,8 @@ whirlshop.prototype.setHoverShape = function (point) {
 	for( var i = 0, l = this.shapes.length; i < l; i++){
 		if( pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
 			this.hoverShape = i;
-			console.log(this.hoverShape);
 			return;
 		}
 		this.hoverShape = -1;
 	}
-}
-
-whirlshop.prototype.drawHoverShape = function (point) {
-	
 }
