@@ -5,7 +5,9 @@ var ws = new whirlshop({
 	hoverCanvas: document.getElementById("hoverCanvas")
 });
 
-var mouseDown = false,
+var contextMenu = document.getElementById("contextmenu"),
+contextDelete = document.getElementById("contextDelete"),
+mouseDown = false,
 mouseDraggingPoint = false,
 contextMenuVisible = false;
 
@@ -27,9 +29,12 @@ ws.hoverCanvas.addEventListener('mouseup', function (event) {
 });
 ws.hoverCanvas.addEventListener('contextmenu', function(event){
 	event.preventDefault();
-	document.getElementById("contextmenu").className = "show";  
-    document.getElementById("contextmenu").style.left = event.offsetX;
-    document.getElementById("contextmenu").style.top =  event.offsetY;
+	contextMenu.className = "show";  
+    contextMenu.style.left = event.offsetX;
+    contextMenu.style.top =  event.offsetY;
+    while(contextMenu.firstChild) contextMenu.removeChild(contextMenu.firstChild);
+    if(ws.hoverShape > -1)
+    	contextMenu.appendChild(contextDelete);
     contextMenuVisible = true;
 	return false;
 }, false);
@@ -85,8 +90,8 @@ function mouseMoveHandler(event) {
 	ws.drawHoverCanvas();
 }
 
-function deleteShape(){
-	ws.deleteShape();
+function contextDeleteShape(){
+	ws.deleteShape(ws.hoverShape);
 	hideContextMenu();
 }
 

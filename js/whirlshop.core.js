@@ -205,9 +205,24 @@ whirlshop.prototype.setHoverShape = function (point) {
 	}
 }
 
-whirlshop.prototype.deleteShape = function () {
-	if(this.hoverShape > -1){
-		this.shapes.splice(this.hoverShape, 1);
+whirlshop.prototype.deleteShape = function (deleteShape) {
+	if(deleteShape > -1){
+		this.shapes.splice(deleteShape, 1);
+		var deleteCurrentPoint = true;
+		for(var i = 0, li = this.allPoints.length; i < li; i++){
+			deleteCurrentPoint = true;
+			for(var j = 0, lj = this.shapes.length; j < lj; j++){
+				if(this.shapes[j].points.indexOf(this.allPoints[i]) > -1){
+					deleteCurrentPoint = false;
+					break;
+				}
+			}
+			if(deleteCurrentPoint){
+				this.allPoints.splice(i, 1);
+				li--;
+				i--;
+			}
+		}
 		this.hoverShape = -1;
 		this.redrawShapes();
 	}

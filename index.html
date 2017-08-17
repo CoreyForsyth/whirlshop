@@ -37,6 +37,8 @@
       			list-style-position:inside;
         		margin:0;
         		padding-left:0;
+        		min-height: 20px;
+        		min-width: 200px;
 			}
 			.hide {
 			    display: none;
@@ -102,7 +104,7 @@
 		</div>
 		<div>
             <ul class="hide" id="contextmenu">
-                <li onclick="deleteShape()">
+                <li class="hide" id="contextDelete" onclick="contextDeleteShape()">
                     Delete
                 </li>
             </ul>
