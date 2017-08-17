@@ -32,9 +32,10 @@ ws.hoverCanvas.addEventListener('contextmenu', function(event){
 	contextMenu.className = "show";  
     contextMenu.style.left = event.offsetX;
     contextMenu.style.top =  event.offsetY;
-    while(contextMenu.firstChild) contextMenu.removeChild(contextMenu.firstChild);
     if(ws.hoverShape > -1)
-    	contextMenu.appendChild(contextDelete);
+    	contextDelete.className= "contextItem";
+    else
+    	contextDelete.className = "contextItem hide";
     contextMenuVisible = true;
 	return false;
 }, false);

@@ -43,12 +43,15 @@
 			.hide {
 			    display: none;
 			}
-			.show li{ 
+			.contextItem { 
 				display: block; 
   				padding: 8px 20px 8px 10px;
   				color: #4f4f4f;
 			}
-			.show li:hover { 
+			.contextItem.hide{ 
+				display: none;
+			}
+			.contextItem:hover { 
 			    background-color: #dfdfdf;
     			text-decoration: none;
     			cursor: default;
@@ -104,7 +107,7 @@
 		</div>
 		<div>
             <ul class="hide" id="contextmenu">
-                <li class="hide" id="contextDelete" onclick="contextDeleteShape()">
+                <li class="contextItem" id="contextDelete" onclick="contextDeleteShape()">
                     Delete
                 </li>
             </ul>
