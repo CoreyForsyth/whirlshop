@@ -18,24 +18,28 @@ ws.hoverCanvas.addEventListener('mousedown', function (event) {
 	mouseDown = true;
 });
 ws.hoverCanvas.addEventListener('mouseup', function (event) {
-	if(contextMenuVisible){
+	if (contextMenuVisible) {
 		hideContextMenu();
-		return;
 	}
-	if (!mouseDraggingPoint && event.which == 1)
+	else if (!mouseDraggingPoint && event.which == 1)
 		ws.addPoint(ws.hoverPoint || {x: event.offsetX, y: event.offsetY});
+
 	mouseDown = false;
 	mouseDraggingPoint = false;
 });
 ws.hoverCanvas.addEventListener('contextmenu', function(event){
 	event.preventDefault();
-	contextMenu.className = "show";  
-    contextMenu.style.left = event.offsetX;
-    contextMenu.style.top =  event.offsetY;
-    while(contextMenu.firstChild) contextMenu.removeChild(contextMenu.firstChild);
-    if(ws.hoverShape > -1)
-    	contextMenu.appendChild(contextDelete);
-    contextMenuVisible = true;
+	while (contextMenu.firstChild) 
+		contextMenu.removeChild(contextMenu.firstChild);
+	if (ws.hoverShape > -1)
+		contextMenu.appendChild(contextDelete);
+
+	if (contextMenu.childNodes.length) {
+		contextMenu.className = "show";  
+		contextMenu.style.left = event.offsetX;
+		contextMenu.style.top =  event.offsetY;
+		contextMenuVisible = true;
+	}
 	return false;
 }, false);
 window.addEventListener('resize', function(){
@@ -69,15 +73,11 @@ $('#layers-select').click(function() {
 
 
 function mouseMoveHandler(event) {
-	var i,
-	sl,
-	j,
-	spl,
-	mousePoint = {x: event.offsetX, 
+	var mousePoint = {x: event.offsetX, 
 		y: event.offsetY};
 
-	if (mouseDown && ws.hoverPoint)
-		mouseDraggingPoint = true;
+		if (mouseDown && ws.hoverPoint)
+			mouseDraggingPoint = true;
 
 
 	if (mouseDraggingPoint) { // If point is being dragged	
