@@ -1,5 +1,6 @@
-
-
+function distance(p1, p2) {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+}
 
 function normalize (points, numSides, cclockwise){
 	var cx = 0,
@@ -82,8 +83,7 @@ function shapeIsConvex(points){
     return true;
 }
 
-function CrossProductLength(Ax, Ay, Bx, By, Cx, Cy)
-{
+function CrossProductLength(Ax, Ay, Bx, By, Cx, Cy) {
     // Get the vectors' coordinates.
     var BAx = Ax - Bx,
     BAy = Ay - By,
@@ -92,4 +92,39 @@ function CrossProductLength(Ax, Ay, Bx, By, Cx, Cy)
 
     // Calculate the Z coordinate of the cross product.
     return (BAx * BCy - BAy * BCx);
+}
+
+function drawCircle(ctx, center, r) {
+    ctx.beginPath();
+    ctx.arc(center.x, center.y, r, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.closePath();
+}
+
+// Debouncing from https://davidwalsh.name/javascript-debounce-function
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+};
+
+function pointInShape(points, sides, point){
+    var c = false,
+    i,
+    j;
+    for (i = 0, j = sides - 1; i < sides; j = i++) {
+        if (((points[i].y > point.y) != (points[j].y > point.y))
+                && (point.x < (points[j].x - points[i].x) * (point.y - points[i].y) / (points[j].y - points[i].y) + points[i].x))
+            c = !c;
+    }
+    return c;
 }
