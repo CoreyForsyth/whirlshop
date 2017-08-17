@@ -60,12 +60,11 @@ whirlshop.prototype.redrawShapes = function() {
 	return this;
 }
 
-// Not working rn
 whirlshop.prototype.resizeCanvas = function() {
-    this.canvas.width = window.innerWidth - 250;
-    this.canvas.height = window.innerHeight;
-    this.hoverCanvas.width = window.innerWidth - 250;
-    this.hoverCanvas.height = window.innerHeight;
+	this.canvas.width = window.innerWidth - 250;
+	this.canvas.height = window.innerHeight;
+	this.hoverCanvas.width = window.innerWidth - 250;
+	this.hoverCanvas.height = window.innerHeight;
 
 	this.redrawShapes(); 
 
@@ -73,10 +72,9 @@ whirlshop.prototype.resizeCanvas = function() {
 }
 
 whirlshop.prototype.addPoint = function(point) {
-
-	if (!point.x || !typeof point.x === Number)
+	if (!point.x || typeof point.x != "number")
 		throw "x is not properly defined";
-	if (!point.y || !typeof point.y === Number)
+	if (!point.y || typeof point.y != "number")
 		throw "y is not properly defined";
 
 	if (~this.activePoints.indexOf(point))
@@ -168,61 +166,61 @@ whirlshop.prototype.setHoverPoint = function(mousePoint){
 			|| typeof closestPoint.y !== 'undefined') { // If within bounds of a border
 
 			this.hoverPoint = closestPoint;
-			if (typeof this.hoverPoint.x === 'undefined')
-				this.hoverPoint.x = event.offsetX;
-			if (typeof this.hoverPoint.y === 'undefined')
-				this.hoverPoint.y = event.offsetY;
-		}
+		if (typeof this.hoverPoint.x === 'undefined')
+			this.hoverPoint.x = event.offsetX;
+		if (typeof this.hoverPoint.y === 'undefined')
+			this.hoverPoint.y = event.offsetY;
 	}
+}
 }
 
 whirlshop.prototype.movePoints = function(newPoint){
-	for (i = 0, sl = this.shapes.length; i < sl; i++){
-			for (j = 0, spl = this.shapes[i].sides; j < spl; j++){
-				if (this.shapes[i].points[j] == this.hoverPoint) {
-					this.shapes[i].points[j] = newPoint;
-					this.shapes[i].points.splice(this.shapes[i].sides);
-					this.shapes[i].calculatePoints();
-					break;
-				}
+	for (var i = 0, sl = this.shapes.length; i < sl; i++){
+		for (var j = 0, spl = this.shapes[i].sides; j < spl; j++){
+			if (this.shapes[i].points[j] == this.hoverPoint) {
+				this.shapes[i].points[j] = newPoint;
+				this.shapes[i].points.splice(this.shapes[i].sides);
+				this.shapes[i].calculatePoints();
+				break;
 			}
 		}
-		this.activePoints[this.activePoints.indexOf(this.hoverPoint)] = newPoint;
-		this.allPoints[this.allPoints.indexOf(this.hoverPoint)] = newPoint;
-		this.hoverPoint = newPoint;
-		this.redrawShapes();
+	}
+	this.activePoints[this.activePoints.indexOf(this.hoverPoint)] = newPoint;
+	this.allPoints[this.allPoints.indexOf(this.hoverPoint)] = newPoint;
+	this.hoverPoint = newPoint;
+	this.redrawShapes();
 }
 
 whirlshop.prototype.setHoverShape = function (point) {
-	if( this.hoverPoint !== undefined)
-		this.hoverShape = -1;
-	for( var i = 0, l = this.shapes.length; i < l; i++){
-		if( pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
+	for (var i = 0, l = this.shapes.length; i < l; i++){
+		if (pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
 			this.hoverShape = i;
 			return;
 		}
-		this.hoverShape = -1;
 	}
+	this.hoverShape = -1;
 }
 
-whirlshop.prototype.deleteShape = function (deleteShape) {
-	if(deleteShape > -1){
-		this.shapes.splice(deleteShape, 1);
-		var deleteCurrentPoint = true;
-		for(var i = 0, li = this.allPoints.length; i < li; i++){
+whirlshop.prototype.deleteShape = function (deleteShape) {	
+	if (~deleteShape) {
+		var i,
+		j,
+		sl,
+		spl,
+		deleteCurrentPoint = true,
+		shapePoints = this.shapes[deleteShape].getBorderPoints();
+		this.shapes.splice(deleteShape, 1);		
+		for (i = 0, spl = shapePoints.length; i < spl; i++) {
 			deleteCurrentPoint = true;
-			for(var j = 0, lj = this.shapes.length; j < lj; j++){
-				if(this.shapes[j].points.indexOf(this.allPoints[i]) > -1){
+			for (j = 0, sl = this.shapes.length; j < sl; j++) {
+				if (~this.shapes[j].points.indexOf(shapePoints[i])) {
 					deleteCurrentPoint = false;
 					break;
 				}
 			}
-			if(deleteCurrentPoint){
-				this.allPoints.splice(i, 1);
-				li--;
-				i--;
-			}
-		}
+			if (deleteCurrentPoint)
+				this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);				
+		} 
 		this.hoverShape = -1;
 		this.redrawShapes();
 	}
