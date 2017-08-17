@@ -204,3 +204,11 @@ whirlshop.prototype.setHoverShape = function (point) {
 		this.hoverShape = -1;
 	}
 }
+
+whirlshop.prototype.deleteShape = function () {
+	if(this.hoverShape > -1){
+		this.shapes.splice(this.hoverShape, 1);
+		this.hoverShape = -1;
+		this.redrawShapes();
+	}
+}

@@ -26,6 +26,31 @@
 				bottom: 0;
 				background-color: #f4f4f4;
 			}
+			.show{
+			    z-index:1000;
+			    position: absolute;
+			    background-color:#ffffff;
+			    border: 1px solid #dfdfdf;
+			    display: block;
+			    margin: 0;
+			    list-style-type: none;
+      			list-style-position:inside;
+        		margin:0;
+        		padding-left:0;
+			}
+			.hide {
+			    display: none;
+			}
+			.show li{ 
+				display: block; 
+  				padding: 8px 20px 8px 10px;
+  				color: #4f4f4f;
+			}
+			.show li:hover { 
+			    background-color: #dfdfdf;
+    			text-decoration: none;
+    			cursor: default;
+			}
 		</style>
 	</head>
 	<body>
@@ -75,6 +100,13 @@
 				</select>
 			</div>
 		</div>
+		<div>
+            <ul class="hide" id="contextmenu">
+                <li onclick="deleteShape()">
+                    Delete
+                </li>
+            </ul>
+        </div>
 
 		<canvas id="shapeCanvas"></canvas>
 		<canvas id="hoverCanvas"></canvas>
