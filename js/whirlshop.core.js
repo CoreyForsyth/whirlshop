@@ -72,9 +72,9 @@ whirlshop.prototype.resizeCanvas = function() {
 }
 
 whirlshop.prototype.addPoint = function(point) {
-	if (!point.x || !typeof point.x === Number)
+	if (!point.x || typeof point.x != "number")
 		throw "x is not properly defined";
-	if (!point.y || !typeof point.y === Number)
+	if (!point.y || typeof point.y != "number")
 		throw "y is not properly defined";
 
 	if (~this.activePoints.indexOf(point))
