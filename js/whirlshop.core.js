@@ -243,6 +243,7 @@ whirlshop.prototype.setHoverShape = function (point) {
 * @param {int} shapeToDelete			Shape index to delete
 */
 whirlshop.prototype.deleteShape = function (shapeToDelete) {	
+	this.hoverShape = -1;
 	if (~shapeToDelete) {
 		var i,
 		j,
@@ -262,7 +263,7 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 			if (deleteCurrentPoint)
 				this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);				
 		} 
-		this.hoverShape = -1;
 		this.redrawShapes();
+		this.drawHoverCanvas();
 	}
 }
