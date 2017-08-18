@@ -192,6 +192,10 @@ whirlshop.prototype.movePoints = function(newPoint){
 }
 
 whirlshop.prototype.setHoverShape = function (point) {
+	if (this.hoverPoint !== undefined){
+		this.hoverShape = -1;
+		return;
+	}
 	for (var i = 0, l = this.shapes.length; i < l; i++){
 		if (pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
 			this.hoverShape = i;
