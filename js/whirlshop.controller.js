@@ -4,16 +4,21 @@ var ws = new whirlshop({
 	canvas: document.getElementById("shapeCanvas"),
 	hoverCanvas: document.getElementById("hoverCanvas")
 });
-
+// Context Menu
 var contextMenu = document.getElementById("contextmenu"),
-contextDelete = document.getElementById("contextDelete"),
-mouseDown = false,
+contextHoverShape = document.getElementById("contextHoverShape");
+
+// Global variables
+var mouseDown = false,
 mouseDraggingPoint = false,
 contextMenuVisible = false;
 
 
 // Event listeners
-ws.hoverCanvas.addEventListener('mousemove', mouseMoveHandler);
+ws.hoverCanvas.addEventListener('mousemove', function(event){
+	if(!contextMenuVisible)
+		mouseMoveHandler(event);
+});
 ws.hoverCanvas.addEventListener('mousedown', function (event) {
 	mouseDown = true;
 });
@@ -29,20 +34,27 @@ ws.hoverCanvas.addEventListener('mouseup', function (event) {
 });
 ws.hoverCanvas.addEventListener('contextmenu', function(event){
 	event.preventDefault();
-	contextMenu.className = "show";  
-    contextMenu.style.left = event.offsetX;
-    contextMenu.style.top =  event.offsetY;
-    if(ws.hoverShape > -1)
-    	contextDelete.className= "contextItem";
-    else
-    	contextDelete.className = "contextItem hide";
-    contextMenuVisible = true;
+	//add each item
+    if(ws.hoverShape > -1){
+    	contextHoverShape.className = "contextItem";
+    	contextMenuVisible = true;
+    }
+    else 
+    	contextHoverShape.className= "hide";
+
+    //show context menu
+    if(contextMenuVisible){
+		contextMenu.className = "show";  
+    	contextMenu.style.left = event.offsetX;
+   		contextMenu.style.top =  event.offsetY;
+   	}
 	return false;
 }, false);
 window.addEventListener('resize', function(){
 	ws.resizeCanvas();
 });
 
+// Resize canvas on startup
 ws.resizeCanvas();
 
 // Plus sign in front of $(this).val() returns numerical value instead of string
@@ -68,7 +80,7 @@ $('#layers-select').click(function() {
 	ws.settings['numLayers'] = +$(this).val();
 });
 
-
+// Mouse Move Handler
 function mouseMoveHandler(event) {
 	var mousePoint = {x: event.offsetX, 
 		y: event.offsetY};
@@ -87,6 +99,7 @@ function mouseMoveHandler(event) {
 	ws.drawHoverCanvas();
 }
 
+// Context menu functions
 function contextDeleteShape(){
 	ws.deleteShape(ws.hoverShape);
 	hideContextMenu();

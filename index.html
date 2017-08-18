@@ -1,124 +1,130 @@
 <html>
-	<head>
-		<title>Pattern Generator</title>
+<head>
+	<title>Pattern Generator</title>
 
-		<script src="js/whirlshop.shape.js"></script>
-		<script src="js/whirlshop.events.js"></script>
-		<script src="js/whirlshop.helper.js"></script>
-		<script src="js/whirlshop.core.js"></script>
-		<script src="js/whirlshop.controller.js" defer></script>
+	<script src="js/whirlshop.shape.js"></script>
+	<script src="js/whirlshop.events.js"></script>
+	<script src="js/whirlshop.helper.js"></script>
+	<script src="js/whirlshop.core.js"></script>
+	<script src="js/whirlshop.controller.js" defer></script>
 
-		<!-- Bootstrap -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-		<style>
-			canvas {
-				position: absolute;
-				top: 0;
-				left: 0;
-				display: block;
-			}
-			.inputBar {
-				padding: 5px 5px 5px 8px;
-				position: absolute;
-				width: 250px;
-				right: 0px;
-				top: 0;
-				bottom: 0;
-				background-color: #f4f4f4;
-			}
-			.show{
-			    z-index: 1;
-			    position: absolute;
-			    background-color: #ffffff;
-			    border: 1px solid #dfdfdf;
-			    display: block;
-			    margin: 0;
-			    list-style-type: none;
-      			list-style-position: inside;        		
-        		padding-left:0;
-        		min-height: 20px;
-        		min-width: 200px;
-			}
-			.hide {
-			    display: none;
-			}
-			.contextItem { 
-				display: block; 
-  				padding: 8px 20px 8px 10px;
-  				color: #4f4f4f;
-			}
-			.contextItem.hide{ 
-				display: none;
-			}
-			.contextItem:hover { 
-			    background-color: #dfdfdf;
-    			text-decoration: none;
-    			cursor: default;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="sidebar" class="inputBar">
-			<h2>Settings</h2>
-			<div class="form-group">
-				<label for="sides-select">Number of Sides:</label>
-				<select class="form-control" id="sides-select">			
-					<option>3</option>
-					<option>4</option>
-					<option selected="true">5</option>
-					<option>6</option>
-					<option>7</option>
-					<option>8</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label for="slope-select">Slope:</label>
-				<select class="form-control" id="slope-select">
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
-					<option selected="true">5</option>
-					<option>6</option>
-					<option>7</option>
-					<option>8</option>
-					<option>9</option>
-					<option>10</option>
-				</select>
-			</div>
-			<div class="form-group">
-				<label for="height-select">Height:</label>
-				<input type="range" class="form-control" id="height-select" min="10" max="200" value="50" step="5">
-			</div>
-			<div class="form-check">
-			    <label class="form-check-label">
-			      <input type="checkbox" class="form-check-input" id="clockwise-check" checked>
-			      Clockwise?
-			    </label>
-			</div>
-			<div class="form-group">
-				<label for="layers-select">Layers:</label>
-				<select class="form-control" id="layers-select">
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-				</select>
-			</div>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+	<style>
+		canvas {
+			position: absolute;
+			top: 0;
+			left: 0;
+			display: block;
+		}
+		.inputBar {
+			padding: 5px 5px 5px 8px;
+			position: absolute;
+			width: 250px;
+			right: 0px;
+			top: 0;
+			bottom: 0;
+			background-color: #f4f4f4;
+		}
+		.show{
+			z-index: 1;
+			position: absolute;
+			background-color: #ffffff;
+			border: 1px solid #afafaf;
+			display: block;
+			margin: 0;
+			list-style-type: none;
+			list-style-position: inside;        		
+			padding-left:0;
+			min-height: 20px;
+			min-width: 200px;
+		}
+		.hide {
+			display: none;
+		}
+		.contextItem li{ 
+			display: block; 
+			padding: 8px 20px 8px 10px;
+			background-color: #ffffff;
+			color: #4f4f4f;
+			text-decoration: none;
+			cursor: default;
+			/* So the user can't select the text */
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none;
+		}
+		.contextItem li:hover{ 
+			background-color: #dfdfdf;
+		}
+	</style>
+</head>
+<body>
+	<div id="sidebar" class="inputBar">
+		<h2>Settings</h2>
+		<div class="form-group">
+			<label for="sides-select">Number of Sides:</label>
+			<select class="form-control" id="sides-select">			
+				<option>3</option>
+				<option>4</option>
+				<option selected="true">5</option>
+				<option>6</option>
+				<option>7</option>
+				<option>8</option>
+			</select>
 		</div>
-		<div>
-            <ul class="hide" id="contextmenu">
-                <li class="contextItem" id="contextDelete" onclick="contextDeleteShape()">
-                    Delete
-                </li>
-            </ul>
-        </div>
+		<div class="form-group">
+			<label for="slope-select">Slope:</label>
+			<select class="form-control" id="slope-select">
+				<option>2</option>
+				<option>3</option>
+				<option>4</option>
+				<option selected="true">5</option>
+				<option>6</option>
+				<option>7</option>
+				<option>8</option>
+				<option>9</option>
+				<option>10</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<label for="height-select">Height:</label>
+			<input type="range" class="form-control" id="height-select" min="10" max="200" value="50" step="5">
+		</div>
+		<div class="form-check">
+			<label class="form-check-label">
+				<input type="checkbox" class="form-check-input" id="clockwise-check" checked>
+				Clockwise?
+			</label>
+		</div>
+		<div class="form-group">
+			<label for="layers-select">Layers:</label>
+			<select class="form-control" id="layers-select">
+				<option>1</option>
+				<option>2</option>
+				<option>3</option>
+			</select>
+		</div>
+	</div>
+	<div>
+		<ul class="hide" id="contextmenu">
+			<div class="contextItem" id="contextHoverShape">
+				<li onclick="contextDeleteShape()">
+					Delete Shape
+				</li>
+			</div>
+		</ul>
+	</div>
 
-		<canvas id="shapeCanvas"></canvas>
-		<canvas id="hoverCanvas"></canvas>
+	<canvas id="shapeCanvas"></canvas>
+	<canvas id="hoverCanvas"></canvas>
 
-		<!-- Bootstrap scripts -->
-		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-	</body>
+	<!-- Bootstrap scripts -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+</body>
 
 </html>
