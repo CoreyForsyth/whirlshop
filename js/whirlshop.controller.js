@@ -6,7 +6,8 @@ var ws = new whirlshop({
 });
 // Context Menu
 var contextMenu = document.getElementById("contextmenu"),
-contextHoverShape = document.getElementById("contextHoverShape");
+contextHoverShape = document.getElementById("contextHoverShape"),
+contextHoverMultiplePoints = document.getElementById("contextHoverMultiplePoints");
 
 // Global variables
 var mouseDown = false,
@@ -16,7 +17,7 @@ contextMenuVisible = false;
 
 // Event listeners
 ws.hoverCanvas.addEventListener('mousemove', function(event){
-	if(!contextMenuVisible)
+	if(!contextMenuVisible && event.which !=3)
 		mouseMoveHandler(event);
 });
 ws.hoverCanvas.addEventListener('mousedown', function (event) {
@@ -41,6 +42,14 @@ ws.hoverCanvas.addEventListener('contextmenu', function(event){
     }
     else 
     	contextHoverShape.className= "hide";
+
+    if(ws.hoverPoint !== undefined){
+    	contextHoverMultiplePoints.className = "contextItem";
+    	contextMenuVisible = true;
+    }
+    else 
+    	contextHoverMultiplePoints.className= "hide";
+    
 
     //show context menu
     if(contextMenuVisible){
@@ -85,8 +94,8 @@ function mouseMoveHandler(event) {
 	var mousePoint = {x: event.offsetX, 
 		y: event.offsetY};
 
-		if (mouseDown && ws.hoverPoint)
-			mouseDraggingPoint = true;
+	if (mouseDown && ws.hoverPoint)
+		mouseDraggingPoint = true;
 
 
 	if (mouseDraggingPoint) { // If point is being dragged	
@@ -108,4 +117,11 @@ function contextDeleteShape(){
 function hideContextMenu(){
 	document.getElementById("contextmenu").className = "hide";
 	contextMenuVisible = false;
+}
+
+function contextSplitPoints(){
+	ws.splitPoints();
+	hideContextMenu();
+
+
 }

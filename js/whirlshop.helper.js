@@ -128,3 +128,13 @@ function pointInShape(points, sides, point){
     }
     return c;
 }
+
+function getCenter(points){
+    var totalX = 0,
+    totalY = 0;
+    for(var i = 0, l = points.length; i < l; i++){
+        totalX += points[i].x/l;
+        totalY += points[i].y/l;
+    }    
+    return {x: totalX, y: totalY};
+}

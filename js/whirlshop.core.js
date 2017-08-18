@@ -267,3 +267,39 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 		this.drawHoverCanvas();
 	}
 }
+
+
+whirlshop.prototype.splitPoints = function (point){
+	if(this.hoverPoint === undefined)
+		return;
+	var pointsToSplit = [],
+	shapePointIsIn = [],
+	indexInShape = [],
+	currentPointIndex,
+	i,
+	l;
+	for(i = 0, l = ws.shapes.length; i < l; i++){
+		currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint)
+		if(~currentPointIndex){
+			pointsToSplit.push(this.shapes[i].points[currentPointIndex]);
+			shapePointIsIn.push(i);
+			indexInShape.push(currentPointIndex);
+			continue;
+		}
+	}
+	for(i = 0, l = pointsToSplit.length; i< l; i++){
+		currentBorderPoints = this.shapes[shapePointIsIn[i]].getBorderPoints();
+		currentShapeCenter = getCenter(currentBorderPoints);
+		console.log(currentShapeCenter);
+		var deltaX = (currentShapeCenter.x - pointsToSplit[i].x)/5,
+		deltaY = (currentShapeCenter.y - pointsToSplit[i].y)/5;
+		this.shapes[shapePointIsIn[i]].points[indexInShape[i]] = {x: pointsToSplit[i].x + deltaX, y: pointsToSplit[i].y + deltaY};
+		this.allPoints.push(this.shapes[shapePointIsIn[i]].points[indexInShape[i]]);
+		this.shapes[shapePointIsIn[i]].points.splice(this.shapes[shapePointIsIn[i]].sides);
+		this.shapes[shapePointIsIn[i]].calculatePoints();
+	}
+	var indexToRemove = this.allPoints.indexOf(this.hoverPoint);
+	this.allPoints.splice(indexToRemove, 1);
+	this.redrawShapes();
+	this.drawHoverCanvas();
+}
