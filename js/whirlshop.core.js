@@ -1,10 +1,7 @@
 "use strict;"
 
 /**
-*
 * whirlshop constructor
-*
-* @param {array} point_array 	An array of border points
 * @param {object} object		The settings under which the Shape was created
 * @return {Shape} 				Returns the new Shape
 */
@@ -34,8 +31,13 @@ var whirlshop = function(object) {
 		snapDistance: 10,
 		cclockwise: false
 	};
+	return this;
 }
 
+/**
+* Redraw all shapes on ctx
+* @return {whirlshop} this				Returns `this` for chaining
+*/
 whirlshop.prototype.redrawShapes = function() {
 	this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
@@ -60,23 +62,30 @@ whirlshop.prototype.redrawShapes = function() {
 	return this;
 }
 
-// Not working rn
+/**
+* Resize the canvases
+* @return {whirlshop} this				Returns `this` for chaining
+*/
 whirlshop.prototype.resizeCanvas = function() {
-    this.canvas.width = window.innerWidth - 250;
-    this.canvas.height = window.innerHeight;
-    this.hoverCanvas.width = window.innerWidth - 250;
-    this.hoverCanvas.height = window.innerHeight;
+	this.canvas.width = window.innerWidth - 250;
+	this.canvas.height = window.innerHeight;
+	this.hoverCanvas.width = window.innerWidth - 250;
+	this.hoverCanvas.height = window.innerHeight;
 
 	this.redrawShapes(); 
 
 	return this;
 }
 
+/**
+* Add a point to the canvas
+* @param {point} point 					Point being added
+* @return {whirlshop} this				Returns `this` for chaining
+*/
 whirlshop.prototype.addPoint = function(point) {
-
-	if (!point.x || !typeof point.x === Number)
+	if (!point.x || typeof point.x != "number")
 		throw "x is not properly defined";
-	if (!point.y || !typeof point.y === Number)
+	if (!point.y || typeof point.y != "number")
 		throw "y is not properly defined";
 
 	if (~this.activePoints.indexOf(point))
@@ -108,12 +117,18 @@ whirlshop.prototype.addPoint = function(point) {
 	return this;
 }
 
+/**
+* Redraw hoverCanvas
+*/
 whirlshop.prototype.drawHoverCanvas = function(){
 	this.hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
 	this.drawHoverPoint();
 	this.drawHoverShape();
 }
 
+/**
+* Redraw the hoverPoint on the hoverCanvas
+*/
 whirlshop.prototype.drawHoverPoint = function(){
 	if (typeof this.hoverPoint !== 'undefined') {
 		ws.hoverCtx.fillStyle = "rgba(150,150,150,.5)";
@@ -121,6 +136,9 @@ whirlshop.prototype.drawHoverPoint = function(){
 	}
 }
 
+/**
+* Redraw the hoverShape on the hoverCanvas
+*/
 whirlshop.prototype.drawHoverShape = function () {
 	if( this.hoverShape > -1 && this.hoverPoint === undefined ){
 		this.hoverCtx.fillStyle = "rgba(98, 81, 255, 0.3)";
@@ -134,6 +152,11 @@ whirlshop.prototype.drawHoverShape = function () {
 	}
 }
 
+
+/**
+* Redraw the hoverPoint on the hoverCanvas
+* @param {point} mousePoint 			Current Mouse location
+*/
 whirlshop.prototype.setHoverPoint = function(mousePoint){
 	this.hoverPoint = undefined;
 
@@ -166,7 +189,6 @@ whirlshop.prototype.setHoverPoint = function(mousePoint){
 		
 		if (typeof closestPoint.x !== 'undefined' 
 			|| typeof closestPoint.y !== 'undefined') { // If within bounds of a border
-
 			this.hoverPoint = closestPoint;
 			if (typeof this.hoverPoint.x === 'undefined')
 				this.hoverPoint.x = event.offsetX;
@@ -176,31 +198,72 @@ whirlshop.prototype.setHoverPoint = function(mousePoint){
 	}
 }
 
+
+/**
+* Move the `hoverPoint` to newPoint, including the points in all shapes
+* @param {point} newPoint			Point to move current point to
+*/
 whirlshop.prototype.movePoints = function(newPoint){
-	for (i = 0, sl = this.shapes.length; i < sl; i++){
-			for (j = 0, spl = this.shapes[i].sides; j < spl; j++){
-				if (this.shapes[i].points[j] == this.hoverPoint) {
-					this.shapes[i].points[j] = newPoint;
-					this.shapes[i].points.splice(this.shapes[i].sides);
-					this.shapes[i].calculatePoints();
-					break;
-				}
+	for (var i = 0, sl = this.shapes.length; i < sl; i++){
+		for (var j = 0, spl = this.shapes[i].sides; j < spl; j++){
+			if (this.shapes[i].points[j] == this.hoverPoint) {
+				this.shapes[i].points[j] = newPoint;
+				this.shapes[i].points.splice(this.shapes[i].sides);
+				this.shapes[i].calculatePoints();
+				break;
 			}
 		}
-		this.activePoints[this.activePoints.indexOf(this.hoverPoint)] = newPoint;
-		this.allPoints[this.allPoints.indexOf(this.hoverPoint)] = newPoint;
-		this.hoverPoint = newPoint;
-		this.redrawShapes();
+	}
+	this.activePoints[this.activePoints.indexOf(this.hoverPoint)] = newPoint;
+	this.allPoints[this.allPoints.indexOf(this.hoverPoint)] = newPoint;
+	this.hoverPoint = newPoint;
+	this.redrawShapes();
 }
 
+/**
+* Set the hoverShape based upon current mouse location
+* @param {point} point			Current mouse location
+*/
 whirlshop.prototype.setHoverShape = function (point) {
-	if( this.hoverPoint !== undefined)
+	if (this.hoverPoint !== undefined){
 		this.hoverShape = -1;
-	for( var i = 0, l = this.shapes.length; i < l; i++){
-		if( pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
+		return;
+	}
+	for (var i = 0, l = this.shapes.length; i < l; i++){
+		if (pointInShape(this.shapes[i].points, this.shapes[i].sides, point) ){
 			this.hoverShape = i;
 			return;
 		}
-		this.hoverShape = -1;
+	}
+	this.hoverShape = -1;
+}
+
+/**
+* Delete the given shape
+* @param {int} shapeToDelete			Shape index to delete
+*/
+whirlshop.prototype.deleteShape = function (shapeToDelete) {	
+	this.hoverShape = -1;
+	if (~shapeToDelete) {
+		var i,
+		j,
+		sl,
+		spl,
+		deleteCurrentPoint = true,
+		shapePoints = this.shapes[shapeToDelete].getBorderPoints();
+		this.shapes.splice(shapeToDelete, 1);		
+		for (i = 0, spl = shapePoints.length; i < spl; i++) {
+			deleteCurrentPoint = true;
+			for (j = 0, sl = this.shapes.length; j < sl; j++) {
+				if (~this.shapes[j].points.indexOf(shapePoints[i])) {
+					deleteCurrentPoint = false;
+					break;
+				}
+			}
+			if (deleteCurrentPoint)
+				this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);				
+		} 
+		this.redrawShapes();
+		this.drawHoverCanvas();
 	}
 }

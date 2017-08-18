@@ -101,3 +101,7 @@ Shape.prototype.normalize = function() {
 	}
 	return this;
 }
+
+Shape.prototype.getBorderPoints = function() {
+	return this.points.slice(0, this.sides);
+}
