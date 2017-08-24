@@ -278,6 +278,8 @@ whirlshop.prototype.splitPoints = function (point){
 	currentPointIndex,
 	i,
 	l;
+
+	//get list of shapes that need to be split, and other data about them
 	for(i = 0, l = ws.shapes.length; i < l; i++){
 		currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint)
 		if(~currentPointIndex){
@@ -287,10 +289,10 @@ whirlshop.prototype.splitPoints = function (point){
 			continue;
 		}
 	}
+	//iterate through points to split and split them
 	for(i = 0, l = pointsToSplit.length; i< l; i++){
 		currentBorderPoints = this.shapes[shapePointIsIn[i]].getBorderPoints();
 		currentShapeCenter = getCenter(currentBorderPoints);
-		console.log(currentShapeCenter);
 		var deltaX = (currentShapeCenter.x - pointsToSplit[i].x)/5,
 		deltaY = (currentShapeCenter.y - pointsToSplit[i].y)/5;
 		this.shapes[shapePointIsIn[i]].points[indexInShape[i]] = {x: pointsToSplit[i].x + deltaX, y: pointsToSplit[i].y + deltaY};

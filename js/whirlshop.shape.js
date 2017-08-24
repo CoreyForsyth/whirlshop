@@ -28,6 +28,9 @@ Shape.prototype.calculatePoints = function() {
 	length = 0,
 	i = 0;
 
+	if(this.points.length > this.sides)
+		this.points = this.points.splice(this.sides);
+
 	// Loop for each layer
 	for (layer = 0; layer < this.layers; layer++){
 		// Add all other points
