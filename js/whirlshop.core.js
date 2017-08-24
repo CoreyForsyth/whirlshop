@@ -269,48 +269,47 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 }
 
 
-whirlshop.prototype.splitPoints = function (point){
-	if(this.hoverPoint === undefined)
-		return;
-	var pointsToSplit = [],
-	shapePointIsIn = [],
-	indexInShape = [],
-	currentPointIndex,
+whirlshop.prototype.splitPoints = function (){
+    if(this.hoverPoint === undefined)
+	return;
+    var containingShapes = [],
+	newPoint,
 	i,
 	l;
 
-	//get list of shapes that need to be split, and other data about them
-	for(i = 0, l = ws.shapes.length; i < l; i++){
-		currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint)
-		if(~currentPointIndex){
-			pointsToSplit.push(this.shapes[i].points[currentPointIndex]);
-			shapePointIsIn.push(i);
-			indexInShape.push(currentPointIndex);
-			continue;
-		}
+    // Get list of shapes that need to be split, and other data about them
+    for(i = 0, l = this.shapes.length; i < l; i++){
+	if(~this.shapes[i].points.indexOf(this.hoverPoint)){
+	    containingShapes.push(this.shapes[i]);
 	}
-	//iterate through points to split and split them
-	for(i = 0, l = pointsToSplit.length; i< l; i++){
-		currentBorderPoints = this.shapes[shapePointIsIn[i]].getBorderPoints();
-		currentShapeCenter = getCenter(currentBorderPoints);
-		var deltaX = (currentShapeCenter.x - pointsToSplit[i].x)/5,
-		deltaY = (currentShapeCenter.y - pointsToSplit[i].y)/5;
-		this.shapes[shapePointIsIn[i]].points[indexInShape[i]] = {x: pointsToSplit[i].x + deltaX, y: pointsToSplit[i].y + deltaY};
-		this.allPoints.push(this.shapes[shapePointIsIn[i]].points[indexInShape[i]]);
-		this.shapes[shapePointIsIn[i]].points.splice(this.shapes[shapePointIsIn[i]].sides);
-		this.shapes[shapePointIsIn[i]].calculatePoints();
-	}
-	var indexToRemove = this.allPoints.indexOf(this.hoverPoint);
-	this.allPoints.splice(indexToRemove, 1);
-	this.redrawShapes();
-	this.drawHoverCanvas();
+    }
+    
+    // Iterate through containing shapes and split the point
+    for (i = 0, l = containingShapes.length; i < l; i++){
+	var center = getCenter(containingShapes[i].getBorderPoints()),
+	    dist = distance(center, this.hoverPoint),
+	    deltaX = (center.x - this.hoverPoint.x) / dist * this.settings['snapDistance'],
+	    deltaY = (center.y - this.hoverPoint.y) / dist * this.settings['snapDistance'];
+	
+	newPoint = {x: this.hoverPoint.x + deltaX,
+		    y: this.hoverPoint.y + deltaY};
+
+	this.allPoints.push(newPoint);
+	containingShapes[i].points.splice(containingShapes[i].sides);
+	containingShapes[i].points[containingShapes[i].points.indexOf(this.hoverPoint)] = newPoint;
+	containingShapes[i].calculatePoints();
+    }
+
+    this.allPoints.splice(this.allPoints.indexOf(this.hoverPoint), 1);
+    this.redrawShapes();
+    this.drawHoverCanvas();
 }
 
 whirlshop.prototype.getOccurences = function(point){
-	var occurenceCount = 0;
-	for(var i = 0, l = this.shapes.length; i < l; i++){
-		if(~this.shapes[i].points.indexOf(point))
-			occurenceCount++;
-	}
-	return occurenceCount;
+    var occurenceCount = 0;
+    for(var i = 0, l = this.shapes.length; i < l; i++){
+	if(~this.shapes[i].points.indexOf(point))
+	    occurenceCount++;
+    }
+    return occurenceCount;
 }
