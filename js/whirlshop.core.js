@@ -303,3 +303,12 @@ whirlshop.prototype.splitPoints = function (point){
 	this.redrawShapes();
 	this.drawHoverCanvas();
 }
+
+whirlshop.prototype.getOccurences = function(point){
+	var occurenceCount = 0;
+	for(var i = 0, l = this.shapes.length; i < l; i++){
+		if(~this.shapes[i].points.indexOf(point))
+			occurenceCount++;
+	}
+	return occurenceCount;
+}
