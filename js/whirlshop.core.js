@@ -54,7 +54,13 @@ whirlshop.prototype.redrawShapes = function() {
 			this.ctx.closePath();
 		}, this);
 	}
-
+	this.activePoints.forEach(function(p) {
+    	this.ctx.beginPath();
+		this.ctx.fillStyle = "rgb(255,0,10)";
+		this.ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+		this.ctx.fill();
+		this.ctx.closePath();
+	}, this);
 	return this;
 }
 
@@ -102,10 +108,10 @@ whirlshop.prototype.addPoint = function(point) {
 	drawCircle(this.ctx, point, 3);
 
 	if (this.activePoints.length % this.settings['numSides'] == 0) {
-		this.shapes.push(new Shape(this.activePoints, this.settings));
-		this.shapes[this.shapes.length - 1].calculatePoints().drawShape(this.ctx);
-		this.redrawShapes();
+		this.shapes.push(new Shape(this.activePoints.slice(), this.settings));
 		this.activePoints = [];
+		this.shapes[this.shapes.length - 1].calculatePoints();
+		this.redrawShapes();
 		this.drawHoverCanvas();
 	}
 
