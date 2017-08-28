@@ -269,7 +269,9 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 	}
 }
 
-
+/**
+* Split the point shared by two or more shapes at the hoverpoint
+*/
 whirlshop.prototype.splitPoints = function (){
 	if(this.hoverPoint === undefined)
 		return;
@@ -303,6 +305,10 @@ whirlshop.prototype.splitPoints = function (){
 	this.drawHoverCanvas();
 }
 
+/**
+* return amount of occurences of the given point
+* @param {point} point			Point to count
+*/
 whirlshop.prototype.getOccurences = function(point){
 	var occurenceCount = 0;
 	for(var i = 0, l = this.shapes.length; i < l; i++){
