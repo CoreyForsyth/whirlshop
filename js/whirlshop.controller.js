@@ -88,6 +88,10 @@ $('#clockwise-check').click(function() {
 $('#layers-select').click(function() {
 	ws.settings['numLayers'] = +$(this).val();
 });
+$('#show-points').click(function() {
+	ws.settings['showPoints'] = this.checked;
+	ws.redrawShapes();
+});
 
 // Mouse Move Handler
 function mouseMoveHandler(event) {
@@ -122,6 +126,4 @@ function hideContextMenu(){
 function contextSplitPoints(){
 	ws.splitPoints();
 	hideContextMenu();
-
-
 }
