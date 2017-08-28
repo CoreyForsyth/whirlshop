@@ -1,0 +1,3 @@
+[submodule "bootstrap-switch"]
+	path = bootstrap-switch
+	url = https://github.com/Bttstrp/bootstrap-switch.git
