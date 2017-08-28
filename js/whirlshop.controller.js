@@ -126,6 +126,4 @@ function hideContextMenu(){
 function contextSplitPoints(){
 	ws.splitPoints();
 	hideContextMenu();
-
-
 }

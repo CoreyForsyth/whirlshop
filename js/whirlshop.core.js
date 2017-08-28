@@ -45,13 +45,6 @@ whirlshop.prototype.redrawShapes = function() {
 	this.shapes.forEach(function(s) {
 		s.drawShape(this.ctx);
 	}, this);
-	this.activePoints.forEach(function(p) {
-		this.ctx.beginPath();
-		this.ctx.fillStyle = "rgb(255,0,10)";
-		this.ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
-		this.ctx.fill();
-		this.ctx.closePath();
-	}, this);
 	if(this.settings.showPoints){
 		this.allPoints.forEach(function(p) {
 			this.ctx.beginPath();
@@ -110,15 +103,9 @@ whirlshop.prototype.addPoint = function(point) {
 
 	if (this.activePoints.length % this.settings['numSides'] == 0) {
 		this.shapes.push(new Shape(this.activePoints, this.settings));
-		this.activePoints = [];
 		this.shapes[this.shapes.length - 1].calculatePoints().drawShape(this.ctx);
-		if(this.settings['showPoints']){
-			this.ctx.fillStyle = "rgb(10,0,255)";
-			for (var i = 0, l = this.activePoints.length; i < l; i++)
-				drawCircle(this.ctx, this.activePoints[i], 3);
-		}
-		else 
-			this.redrawShapes();
+		this.redrawShapes();
+		this.activePoints = [];
 		this.drawHoverCanvas();
 	}
 
@@ -277,11 +264,12 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 }
 
 
-whirlshop.prototype.splitPoints = function (point){
+whirlshop.prototype.splitPoints = function (){
 	if(this.hoverPoint === undefined)
 		return;
 	var currentPointIndex,
 	currentBorderPoints,
+	center,
 	i,
 	l;
 
@@ -290,12 +278,15 @@ whirlshop.prototype.splitPoints = function (point){
 	for(i = 0, l = ws.shapes.length; i < l; i++){
 		currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint)
 		if(~currentPointIndex){
-			currentBorderPoints = this.shapes[i].getBorderPoints();
-			currentShapeCenter = getCenter(currentBorderPoints);
-			var deltaX = (currentShapeCenter.x - this.hoverPoint.x)/5,
-			deltaY = (currentShapeCenter.y - this.hoverPoint.y)/5;
-			this.shapes[i].points[currentPointIndex] = {x: this.hoverPoint.x + deltaX, y: this.hoverPoint.y + deltaY};
-			this.allPoints.push(this.shapes[i].points[currentPointIndex]);	
+			center = getCenter(this.shapes[i].getBorderPoints());
+	    	dist = distance(center, this.hoverPoint),
+	    	deltaX = (center.x - this.hoverPoint.x) / dist * this.settings['snapDistance'],
+	    	deltaY = (center.y - this.hoverPoint.y) / dist * this.settings['snapDistance'];
+			newPoint = {x: this.hoverPoint.x + deltaX,
+		   			y: this.hoverPoint.y + deltaY};
+
+			this.shapes[i].points[currentPointIndex] = newPoint;
+			this.allPoints.push(newPoint);
 			this.shapes[i].points.splice(this.shapes[i].sides);
 			this.shapes[i].calculatePoints();
 			continue;
