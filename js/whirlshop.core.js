@@ -105,7 +105,7 @@ whirlshop.prototype.addPoint = function(point) {
 
 	// Draw point on shape canvas
 	this.ctx.fillStyle = "rgb(255,0,10)";
-	drawCircle(this.ctx, point, 3);
+	drawCircle(this.ctx, point, 3);	
 
 	if (this.activePoints.length % this.settings['numSides'] == 0) {
 		this.shapes.push(new Shape(this.activePoints.slice(), this.settings));
@@ -288,8 +288,8 @@ whirlshop.prototype.splitPoints = function (){
 		if(~currentPointIndex){
 			center = getCenter(this.shapes[i].getBorderPoints());
 	    	dist = distance(center, this.hoverPoint),
-	    	deltaX = (center.x - this.hoverPoint.x) / dist * this.settings['snapDistance'],
-	    	deltaY = (center.y - this.hoverPoint.y) / dist * this.settings['snapDistance'];
+	    	deltaX = (center.x - this.hoverPoint.x) / dist * 2 * this.settings['snapDistance'],
+	    	deltaY = (center.y - this.hoverPoint.y) / dist * 2 * this.settings['snapDistance'];
 			newPoint = {x: this.hoverPoint.x + deltaX,
 		   			y: this.hoverPoint.y + deltaY};
 
