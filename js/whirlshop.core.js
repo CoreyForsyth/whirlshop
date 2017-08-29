@@ -276,8 +276,9 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 * Split the point shared by two or more shapes at the hoverpoint
 */
 whirlshop.prototype.splitPoints = function (){
-	if(this.hoverPoint === undefined)
-		return;
+    
+	if (this.hoverPoint === undefined || !~this.allPoints.indexOf(this.hoverPoint))
+	    return;
 	var currentPointIndex,
 	center,
 	i,
@@ -309,7 +310,7 @@ whirlshop.prototype.splitPoints = function (){
 
 whirlshop.prototype.deletePoint = function() {
 
-    if (this.hoverPoint === undefined)
+    if (this.hoverPoint === undefined || !~this.allPoints.indexOf(this.hoverPoint))
 	return;
 
     var i,

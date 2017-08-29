@@ -45,7 +45,7 @@ ws.hoverCanvas.addEventListener('contextmenu', function(event){
     else 
     	contextHoverShape.className= "hide";
 
-    if (ws.hoverPoint !== undefined) {
+    if (ws.hoverPoint !== undefined && ~ws.allPoints.indexOf(ws.hoverPoint)) {
 	if (ws.getOccurences(ws.hoverPoint) > 1)
     	    contextHoverMultiplePoints.className = "contextItem";
 	
