@@ -250,23 +250,13 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
     this.hoverShape = -1;
     if (~shapeToDelete) {
 	var i,
-	    j,
-	    sl,
 	    spl,
-	    deleteCurrentPoint = true,
 	    shapePoints = this.shapes[shapeToDelete].getBorderPoints();
 	this.shapes.splice(shapeToDelete, 1);		
 	for (i = 0, spl = shapePoints.length; i < spl; i++) {
-	    deleteCurrentPoint = true;
-	    for (j = 0, sl = this.shapes.length; j < sl; j++) {
-		if (~this.shapes[j].points.indexOf(shapePoints[i])) {
-		    deleteCurrentPoint = false;
-		    break;
-		}
-	    }
-	    if (deleteCurrentPoint)
-		this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);				
-	} 
+	    if (this.getOccurences(shapePoints[i]) < 1 && ~this.allPoints.indexOf(shapePoints[i]))
+		this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);
+	}
 	this.redrawShapes();
 	this.drawHoverCanvas();
     }
@@ -276,18 +266,18 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
 * Split the point shared by two or more shapes at the hoverpoint
 */
 whirlshop.prototype.splitPoints = function (){
-	if(this.hoverPoint === undefined)
-		return;
+    
+	if (this.hoverPoint === undefined || !~this.allPoints.indexOf(this.hoverPoint))
+	    return;
 	var currentPointIndex,
-	currentBorderPoints,
 	center,
 	i,
 	l;
 
 	//go thorugh shapes and split the point that is the same as hoverPoint
 	//The point will move 1/5 the distance towards the center of its shape
-	for(i = 0, l = ws.shapes.length; i < l; i++){
-		currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint)
+	for(i = 0, l = this.shapes.length; i < l; i++){
+	    currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint);
 		if(~currentPointIndex){
 			center = getCenter(this.shapes[i].getBorderPoints());
 	    	dist = distance(center, this.hoverPoint),
@@ -306,6 +296,36 @@ whirlshop.prototype.splitPoints = function (){
 	this.allPoints.splice(this.allPoints.indexOf(this.hoverPoint), 1);
 	this.redrawShapes();
 	this.drawHoverCanvas();
+}
+
+whirlshop.prototype.deletePoint = function(point) {
+
+    if (point === undefined || !~this.allPoints.indexOf(point))
+	return;
+
+    var i,
+	currentPointIndex;
+
+    for (i = this.shapes.length - 1; i >= 0; i--) {
+	currentPointIndex = this.shapes[i].points.indexOf(point);
+	if (~currentPointIndex){ // If point to delete is in current shape
+	    if (this.shapes[i].sides == 3) // If shape has three sides, delete it
+		this.deleteShape(i);	
+	    else { // Shape has > 3 sides, remove one point
+		this.shapes[i].points = this.shapes[i].getBorderPoints();
+		this.shapes[i].points.splice(currentPointIndex, 1);
+		this.shapes[i].calculatePoints();
+		this.shapes[i].sides--;
+	    }
+	}
+    }
+    
+    if (~this.allPoints.indexOf(point))
+        this.allPoints.splice(this.allPoints.indexOf(point), 1);
+    if (~this.activePoints.indexOf(point))
+	this.activePoints.splice(this.activePoints.indexOf(point), 1);
+    this.redrawShapes();
+    this.drawHoverCanvas();
 }
 
 /**

@@ -6,8 +6,9 @@ var ws = new whirlshop({
 });
 // Context Menu
 var contextMenu = document.getElementById("contextmenu"),
-contextHoverShape = document.getElementById("contextHoverShape"),
-contextHoverMultiplePoints = document.getElementById("contextHoverMultiplePoints");
+    contextHoverShape = document.getElementById("contextHoverShape"),
+    contextHoverPoint = document.getElementById("contextHoverPoint"),
+    contextHoverMultiplePoints = document.getElementById("contextHoverMultiplePoints");
 
 // Global variables
 var mouseDown = false,
@@ -44,12 +45,19 @@ ws.hoverCanvas.addEventListener('contextmenu', function(event){
     else 
     	contextHoverShape.className= "hide";
 
-    if(ws.hoverPoint !== undefined && ws.getOccurences(ws.hoverPoint) > 1){
-    	contextHoverMultiplePoints.className = "contextItem";
+    if (ws.hoverPoint !== undefined && ~ws.allPoints.indexOf(ws.hoverPoint)) {
+	if (ws.getOccurences(ws.hoverPoint) > 1)
+    	    contextHoverMultiplePoints.className = "contextItem";
+	else
+	    contextHoverMultiplePoints.className= "hide";
+	
+	contextHoverPoint.className = "contextItem";
     	contextMenuVisible = true;
     }
-    else 
+    else {
     	contextHoverMultiplePoints.className= "hide";
+	contextHoverPoint.className = "hide";
+    }
     
 
     //show context menu
@@ -127,4 +135,9 @@ function hideContextMenu(){
 function contextSplitPoints(){
     ws.splitPoints();
 	hideContextMenu();
+}
+
+function contextDeletePoint(){
+    ws.deletePoint(ws.hoverPoint);
+    hideContextMenu();
 }
