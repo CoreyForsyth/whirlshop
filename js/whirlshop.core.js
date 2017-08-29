@@ -94,7 +94,7 @@ whirlshop.prototype.addPoint = function(point) {
     if (!~this.allPoints.indexOf(point))
 	this.allPoints.push(point);
 
-    // Save reference of point
+    // Save reference of point from allPoints to activePoints
     this.activePoints.push(this.allPoints[this.allPoints.indexOf(point)]);
 
     normalize(this.activePoints, this.activePoints.length, this.settings['cclockwise']);
