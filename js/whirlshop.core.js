@@ -209,32 +209,12 @@ whirlshop.prototype.setHoverPoint = function(mousePoint){
  * @param {point} newPoint			Point to move current point to
  */
 whirlshop.prototype.movePoints = function(newPoint){
-    /*
-    for (var i = 0, sl = this.shapes.length; i < sl; i++){
-	for (var j = 0, spl = this.shapes[i].sides; j < spl; j++){
-	    if (this.shapes[i].points[j] == this.hoverPoint) {
-		this.shapes[i].points[j] = newPoint;
-		this.shapes[i].points.splice(this.shapes[i].sides);
-		this.shapes[i].calculatePoints();
-		break;
-	    }
-	}
-	}*/
-    console.log("newPoint");
-    console.log(newPoint);
-    console.log("current hoverpoint");
-    console.log(this.hoverPoint);
-    if (~this.activePoints.indexOf(this.hoverPoint))
-	this.activePoints[this.activePoints.indexOf(this.hoverPoint)] = newPoint;
-    // Can't find this anymore
-    console.log(this.allPoints);
-    console.log(this.allPoints.indexOf(this.hoverPoint));
+    
     this.allPoints[this.allPoints.indexOf(this.hoverPoint)].x = newPoint.x;
     this.allPoints[this.allPoints.indexOf(this.hoverPoint)].y = newPoint.y;
     
-    this.hoverPoint = newPoint;
-    console.log("new hoverpoint");
-    console.log(this.hoverPoint);
+    this.hoverPoint = this.allPoints[this.allPoints.indexOf(this.hoverPoint)];
+
     for (var i = 0, l = this.shapes.length; i < l; i++) {
 	this.shapes[i].points.splice(this.shapes[i].sides);
 	this.shapes[i].calculatePoints();
