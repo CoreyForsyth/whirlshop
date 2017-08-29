@@ -279,15 +279,14 @@ whirlshop.prototype.splitPoints = function (){
 	if(this.hoverPoint === undefined)
 		return;
 	var currentPointIndex,
-	currentBorderPoints,
 	center,
 	i,
 	l;
 
 	//go thorugh shapes and split the point that is the same as hoverPoint
 	//The point will move 1/5 the distance towards the center of its shape
-	for(i = 0, l = ws.shapes.length; i < l; i++){
-		currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint)
+	for(i = 0, l = this.shapes.length; i < l; i++){
+	    currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint);
 		if(~currentPointIndex){
 			center = getCenter(this.shapes[i].getBorderPoints());
 	    	dist = distance(center, this.hoverPoint),
@@ -306,6 +305,35 @@ whirlshop.prototype.splitPoints = function (){
 	this.allPoints.splice(this.allPoints.indexOf(this.hoverPoint), 1);
 	this.redrawShapes();
 	this.drawHoverCanvas();
+}
+
+whirlshop.prototype.deletePoint = function() {
+
+    if (this.hoverPoint === undefined)
+	return;
+
+    var i,
+	currentPointIndex;
+
+    for (i = this.shapes.length - 1; i >= 0; i--) {
+	currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint);
+	if (~currentPointIndex){ // If point to delete is in current shape
+	    if (this.shapes[i].sides == 3) // If shape has three sides, delete it
+		this.deleteShape(i);
+	    else { // Shape has > 3 sides, remove one point
+		this.shapes[i].points = this.shapes[i].getBorderPoints();
+		this.shapes[i].points.splice(currentPointIndex, 1);
+		this.shapes[i].calculatePoints();
+		this.shapes[i].sides--;
+	    }
+	}
+    }
+
+    this.allPoints.splice(this.allPoints.indexOf(this.hoverPoint), 1);
+    if (~this.activePoints.indexOf(this.hoverPoint))
+	this.activePoints.splice(this.activePoints.indexOf(this.hoverPoint), 1);
+    this.redrawShapes();
+    this.drawHoverCanvas();
 }
 
 /**
