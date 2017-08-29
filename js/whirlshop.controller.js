@@ -34,7 +34,8 @@ ws.hoverCanvas.addEventListener('mouseup', function (event) {
 	mouseDraggingPoint = false;
 });
 ws.hoverCanvas.addEventListener('contextmenu', function(event){
-	event.preventDefault();
+    event.preventDefault();
+    mouseDown = false;
 	//add each item
     if(ws.hoverShape > -1){
     	contextHoverShape.className = "contextItem";
@@ -120,8 +121,6 @@ function hideContextMenu(){
 }
 
 function contextSplitPoints(){
-	ws.splitPoints();
+    ws.splitPoints();
 	hideContextMenu();
-
-
 }
