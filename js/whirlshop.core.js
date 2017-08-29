@@ -115,12 +115,10 @@ whirlshop.prototype.addPoint = function(point) {
     var numSides = this.settings['numSides'];
 
     if (this.activePoints.length % numSides == 0) {
-	this.ctx.fillStyle = "rgb(10,0,255)";
-	for (var i = 0, l = this.activePoints.length; i < l; i++)
-	    drawCircle(this.ctx, this.activePoints[i], 3);
-	this.shapes.push(new Shape(this.activePoints, this.settings));
-	this.activePoints = [];
-	this.shapes[this.shapes.length - 1].calculatePoints().drawShape(this.ctx);
+		this.shapes.push(new Shape(this.activePoints, this.settings));
+		this.activePoints = [];
+		this.shapes[this.shapes.length - 1].calculatePoints();
+		this.redrawShapes();
     }
   
   return this;
