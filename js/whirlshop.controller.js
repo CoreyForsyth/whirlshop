@@ -48,6 +48,8 @@ ws.hoverCanvas.addEventListener('contextmenu', function(event){
     if (ws.hoverPoint !== undefined && ~ws.allPoints.indexOf(ws.hoverPoint)) {
 	if (ws.getOccurences(ws.hoverPoint) > 1)
     	    contextHoverMultiplePoints.className = "contextItem";
+	else
+	    contextHoverMultiplePoints.className= "hide";
 	
 	contextHoverPoint.className = "contextItem";
     	contextMenuVisible = true;
@@ -136,6 +138,6 @@ function contextSplitPoints(){
 }
 
 function contextDeletePoint(){
-    ws.deletePoint();
+    ws.deletePoint(ws.hoverPoint);
     hideContextMenu();
 }

@@ -250,23 +250,13 @@ whirlshop.prototype.deleteShape = function (shapeToDelete) {
     this.hoverShape = -1;
     if (~shapeToDelete) {
 	var i,
-	    j,
-	    sl,
 	    spl,
-	    deleteCurrentPoint = true,
 	    shapePoints = this.shapes[shapeToDelete].getBorderPoints();
 	this.shapes.splice(shapeToDelete, 1);		
 	for (i = 0, spl = shapePoints.length; i < spl; i++) {
-	    deleteCurrentPoint = true;
-	    for (j = 0, sl = this.shapes.length; j < sl; j++) {
-		if (~this.shapes[j].points.indexOf(shapePoints[i])) {
-		    deleteCurrentPoint = false;
-		    break;
-		}
-	    }
-	    if (deleteCurrentPoint)
-		this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);				
-	} 
+	    if (this.getOccurences(shapePoints[i]) < 1 && ~this.allPoints.indexOf(shapePoints[i]))
+		this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);
+	}
 	this.redrawShapes();
 	this.drawHoverCanvas();
     }
@@ -308,19 +298,19 @@ whirlshop.prototype.splitPoints = function (){
 	this.drawHoverCanvas();
 }
 
-whirlshop.prototype.deletePoint = function() {
+whirlshop.prototype.deletePoint = function(point) {
 
-    if (this.hoverPoint === undefined || !~this.allPoints.indexOf(this.hoverPoint))
+    if (point === undefined || !~this.allPoints.indexOf(point))
 	return;
 
     var i,
 	currentPointIndex;
 
     for (i = this.shapes.length - 1; i >= 0; i--) {
-	currentPointIndex = this.shapes[i].points.indexOf(this.hoverPoint);
+	currentPointIndex = this.shapes[i].points.indexOf(point);
 	if (~currentPointIndex){ // If point to delete is in current shape
 	    if (this.shapes[i].sides == 3) // If shape has three sides, delete it
-		this.deleteShape(i);
+		this.deleteShape(i);	
 	    else { // Shape has > 3 sides, remove one point
 		this.shapes[i].points = this.shapes[i].getBorderPoints();
 		this.shapes[i].points.splice(currentPointIndex, 1);
@@ -329,10 +319,11 @@ whirlshop.prototype.deletePoint = function() {
 	    }
 	}
     }
-
-    this.allPoints.splice(this.allPoints.indexOf(this.hoverPoint), 1);
-    if (~this.activePoints.indexOf(this.hoverPoint))
-	this.activePoints.splice(this.activePoints.indexOf(this.hoverPoint), 1);
+    
+    if (~this.allPoints.indexOf(point))
+        this.allPoints.splice(this.allPoints.indexOf(point), 1);
+    if (~this.activePoints.indexOf(point))
+	this.activePoints.splice(this.activePoints.indexOf(point), 1);
     this.redrawShapes();
     this.drawHoverCanvas();
 }
