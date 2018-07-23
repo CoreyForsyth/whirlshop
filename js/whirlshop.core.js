@@ -24,9 +24,11 @@ var whirlshop = function(object) {
     this.hoverShape = -1;
     this.mouseDown = false;
     this.mouseDraggingPoint = false;
+    this.selectedShapes = [];
 
     this.settings = {
-        numSides: 5,
+        numSides: 4,
+        thickness: 2,
         delta: 5,
         numLayers: 1,
         amountToDraw: 50,
@@ -130,6 +132,7 @@ whirlshop.prototype.drawHoverCanvas = function() {
     this.hoverCtx.clearRect(0, 0, hoverCanvas.width, hoverCanvas.height);
     this.drawHoverPoint();
     this.drawHoverShape();
+    this.drawSelectedShapes();
 }
 
 /**
@@ -255,6 +258,10 @@ whirlshop.prototype.deleteShape = function(shapeToDelete) {
             if (this.getOccurences(shapePoints[i]) < 1 && ~this.allPoints.indexOf(shapePoints[i]))
                 this.allPoints.splice(this.allPoints.indexOf(shapePoints[i]), 1);
         }
+        selectedIndex = this.selectedShapes.indexOf(shapeToDelete);
+        if(~selectedIndex) {
+            this.selectedShapes.splice(selectedIndex, 1);
+        }
         this.redrawShapes();
         this.drawHoverCanvas();
     }
@@ -317,8 +324,8 @@ whirlshop.prototype.deletePoint = function(point) {
             else { // Shape has > 3 sides, remove one point
                 this.shapes[i].points = this.shapes[i].getBorderPoints();
                 this.shapes[i].points.splice(currentPointIndex, 1);
-                this.shapes[i].calculatePoints();
                 this.shapes[i].sides--;
+                this.shapes[i].calculatePoints();
             }
         }
     }
@@ -343,4 +350,28 @@ whirlshop.prototype.getOccurences = function(point) {
             occurenceCount++;
     }
     return occurenceCount;
+}
+
+whirlshop.prototype.editShapes = function(){
+    for (var i = 0, l = this.selectedShapes.length; i < l; i ++){
+        this.shapes[this.selectedShapes[i]].setValues(this.settings);
+        this.shapes[this.selectedShapes[i]].calculatePoints();
+    }
+    this.redrawShapes();
+}
+
+whirlshop.prototype.drawSelectedShapes = function(){
+    var length = this.selectedShapes.length;
+    for (var i = 0; i < length; i++) {
+        currentShapeIndex = this.selectedShapes[i];
+        this.hoverCtx.fillStyle = "rgba(98, 255, 85, 0.3)";
+        this.hoverCtx.beginPath();
+        this.hoverCtx.moveTo(this.shapes[currentShapeIndex].points[0].x, this.shapes[currentShapeIndex].points[0].y);
+        for (var j = 1, l = this.shapes[currentShapeIndex].sides; j < l; j++) {
+            this.hoverCtx.lineTo(this.shapes[currentShapeIndex].points[j].x, this.shapes[currentShapeIndex].points[j].y)
+        }
+        this.hoverCtx.closePath();
+        this.hoverCtx.fill();
+        
+    }
 }

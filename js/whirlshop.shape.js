@@ -12,6 +12,16 @@ var Shape = function(point_array, settings) {
     this.layers = settings['numLayers'] || 1;
     this.amountToDraw = settings['amountToDraw'] || 50;
     this.delta = settings['delta'] || 5;
+    this.thickness = settings['thickness'] || 1;
+    this.cclockwise = settings['cclockwise'] || false;
+}
+
+Shape.prototype.setValues = function(settings){
+    this.layers = settings['numLayers'];
+    this.amountToDraw = settings['amountToDraw'];
+    this.delta = settings['delta'];
+    this.thickness = settings['thickness'];
+    this.cclockwise = settings['cclockwise'];
 }
 
 /**
@@ -24,9 +34,11 @@ Shape.prototype.calculatePoints = function() {
         length = 0,
         i = 0;
 
-    if (this.points.length > this.sides)
-        this.points = this.points.splice(this.sides);
+    if (this.points.length > this.sides){
+        this.points.splice(this.sides, this.points.length - this.sides);
+    }
 
+    normalize(this.points, this.sides, !this.cclockwise)
     // Loop for each layer
     for (layer = 0; layer < this.layers; layer++) {
         // Add all other points
@@ -56,6 +68,7 @@ Shape.prototype.calculatePoints = function() {
 Shape.prototype.drawShape = function(ctx) {
     ctx.beginPath();
     ctx.fillStyle = "rgb(0,0,0)";
+    ctx.lineWidth=this.thickness;
     ctx.moveTo(this.points[this.sides - 1].x, this.points[this.sides - 1].y);
     ctx.lineTo(this.points[0].x, this.points[0].y);
     // Draws lines between all sequential points

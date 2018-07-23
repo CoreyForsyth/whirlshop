@@ -9,6 +9,7 @@ var contextMenu = document.getElementById("contextmenu"),
     contextHoverShape = document.getElementById("contextHoverShape"),
     contextHoverPoint = document.getElementById("contextHoverPoint"),
     contextHoverMultiplePoints = document.getElementById("contextHoverMultiplePoints");
+    contextSelectedShapes = document.getElementById("contextSelectedShapes");
 
 // Global variables
 var mouseDown = false,
@@ -25,11 +26,22 @@ ws.hoverCanvas.addEventListener('mousedown', function(event) {
     mouseDown = true;
 });
 ws.hoverCanvas.addEventListener('mouseup', function(event) {
+    if(event.button === 2){
+        return;
+    }
     if (contextMenuVisible) {
         hideContextMenu();
-    } else if (!mouseDraggingPoint && event.which == 1)
+    } else if (!mouseDraggingPoint && event.which == 1 && ws.hoverShape == -1)
         ws.addPoint(ws.hoverPoint || { x: event.offsetX, y: event.offsetY });
-
+    else if(ws.hoverShape > -1){
+        hoverShapeIndex = ws.selectedShapes.indexOf(ws.hoverShape);
+        if(!~hoverShapeIndex){
+            ws.selectedShapes.push(ws.hoverShape);
+        }
+        else {
+            ws.selectedShapes.splice(hoverShapeIndex, 1);
+        }
+    }
     mouseDown = false;
     mouseDraggingPoint = false;
 });
@@ -40,8 +52,16 @@ ws.hoverCanvas.addEventListener('contextmenu', function(event) {
     if (ws.hoverShape > -1) {
         contextHoverShape.className = "contextItem";
         contextMenuVisible = true;
-    } else
+        if (ws.selectedShapes.indexOf(ws.hoverShape) != -1){
+            contextSelectedShapes.className = "contextItem";
+        }
+        else {
+            contextSelectedShapes.className = "hide";
+        }
+    } else {
         contextHoverShape.className = "hide";
+        contextSelectedShapes.className = "hide";
+    }
 
     if (ws.hoverPoint !== undefined && ~ws.allPoints.indexOf(ws.hoverPoint)) {
         if (ws.getOccurences(ws.hoverPoint) > 1)
@@ -81,6 +101,9 @@ $('#slope-select').on('change', function() {
 $('#height-select').on('change', function() {
     ws.settings['amountToDraw'] = +$(this).val();
 });
+$('#thickness-select').on('change', function() {
+    ws.settings['thickness'] = +$(this).val();
+});
 $('#slope-select').on('change', function() {
     ws.settings['delta'] = +$(this).val();
 });
@@ -96,6 +119,9 @@ $('#layers-select').click(function() {
 $('#show-points').click(function() {
     ws.settings['showPoints'] = this.checked;
     ws.redrawShapes();
+});
+$('#edit-shapes').click(function() {
+    ws.editShapes();
 });
 
 // Mouse Move Handler
@@ -138,3 +164,18 @@ function contextDeletePoint() {
     ws.deletePoint(ws.hoverPoint);
     hideContextMenu();
 }
+
+function contextDeleteSelectedShapes() {
+    ws.selectedShapes.sort();
+    ws.selectedShapes.reverse();
+    while (ws.selectedShapes.length != 0){
+        ws.deleteShape(ws.selectedShapes[0]);
+    }
+    hideContextMenu();
+}
+
+function contextUpdateSelectedShapes() {
+    ws.editShapes();
+    hideContextMenu();
+}
+

@@ -3,7 +3,6 @@
 	<title>Pattern Generator</title>
 
 	<script src="js/whirlshop.shape.js"></script>
-	<script src="js/whirlshop.events.js"></script>
 	<script src="js/whirlshop.helper.js"></script>
 	<script src="js/whirlshop.core.js"></script>
 	<script src="js/whirlshop.controller.js" defer></script>
@@ -68,8 +67,8 @@
 			<label for="sides-select">Number of Sides:</label>
 			<select class="form-control" id="sides-select">			
 				<option>3</option>
-				<option>4</option>
-				<option selected="true">5</option>
+				<option selected="true">4</option>
+				<option>5</option>
 				<option>6</option>
 				<option>7</option>
 				<option>8</option>
@@ -93,6 +92,10 @@
 			<label for="height-select">Height:</label>
 			<input type="range" class="form-control" id="height-select" min="10" max="200" value="50" step="5">
 		</div>
+		<div class="form-group">
+			<label for="height-select">Thickness:</label>
+			<input type="range" class="form-control" id="thickness-select" min="1" max="5" value="2" step="1">
+		</div>
 		<div class="form-check">
 			<label class="form-check-label">
 				<input type="checkbox" class="form-check-input" id="clockwise-check" checked>
@@ -113,6 +116,11 @@
 				<option>3</option>
 			</select>
 		</div>
+		<div>
+			<div class="form-group">
+				<input type="button" id="edit-shapes" value="Update Selected Shape(s)">	
+			</div>
+		</div>
 	</div>
 	<div>
 		<ul class="hide" id="contextmenu">
@@ -129,6 +137,14 @@
 			<div class="contextItem" id="contextHoverPoint">
 				<li onclick="contextDeletePoint()">
 					Delete Point
+				</li>
+			</div>
+			<div class="contextItem" id="contextSelectedShapes">
+				<li onclick="contextDeleteSelectedShapes()">
+					Delete Selected Shape(s)
+				</li>
+				<li onclick="contextUpdateSelectedShapes()">
+					Update Selected Shape(s)
 				</li>
 			</div>
 			
